@@ -1,0 +1,8 @@
+Msi/Exe
+Visual Studio Installer (built in)
+ajoute l'app dans le menu de démarrage, simple à distribuer
+
+options:
+icon
+readme / license
+prérequis (.Net version)

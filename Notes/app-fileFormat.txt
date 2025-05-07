@@ -1,0 +1,52 @@
+quand double click sur le fichier (type gitj), ouvre l'app automatiquement
+
+In your WPF app (App.xaml.cs), parse args:
+
+csharp
+Copier
+Modifier
+public partial class App : Application
+{
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+        if (e.Args.Length > 0)
+        {
+            string filePath = e.Args[0];
+            // TODO: open/parse the .gitj file
+        }
+    }
+}
+
+
+🧰 Option A: Using Visual Studio Installer Project
+Here’s how to register the .gitj file association:
+
+➤ Steps:
+Open your Setup Project in Visual Studio.
+
+Right-click the setup project > View > File Types.
+
+Add a new file type:
+
+Extension: gitj
+
+Description: "Git JSON File"
+
+MIME type: application/x-gitj (optional)
+
+Command: Add a new command, set:
+
+Command: "Open" (or whatever label you want in context menu)
+
+Executable: point to your app’s primary output
+
+Arguments: "\"%1\"" ← important to pass the file path
+
+Rebuild the installer. When installed, .gitj files will open with your app.
+
+
+
+
+
+https://chatgpt.com/c/681b2e4a-0050-800d-a813-d358b510015c

@@ -16,9 +16,16 @@ namespace GitJournal
     /// </summary>
     public partial class MainWindow : Window
     {
+        Controller _controller;
         public MainWindow()
         {
             InitializeComponent();
+            Loaded += IntiMethodes;
+        }
+
+        private async void IntiMethodes(object sender, RoutedEventArgs e)
+        {
+            _controller = new Controller(this);
         }
     }
 }

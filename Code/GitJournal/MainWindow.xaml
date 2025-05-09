@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GitJournal"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowStyle="None">
+        Title="MainWindow" Height="450" Width="800" WindowStyle="None"
+        Icon="/Ressources/icon-white.png">
     <Window.Resources>
         <Style TargetType="Menu" x:Key="DarkMenuStyle">
             <Setter Property="Background" Value="#FF1E2125"/>
@@ -44,7 +45,9 @@
     <DockPanel x:Name="DockPanel_Main">
         <Border x:Name="CustomTitleBar" Height="32" DockPanel.Dock="Top" Background="#1D2125" MouseDown="CustomTitleBar_MouseDown">
             <DockPanel x:Name="DockPanel_Top" VerticalAlignment="Center">
-                <!--  <Image x:Name="Image_Avatar" Height="32" Width="32" Source="/GitToolsLogo.png"/> -->
+
+                <Image x:Name="Image_AppIcon" Height="32" Width="32" Source="/Ressources/icon-white.png" OpacityMask="#FFE42727"/>
+
                 <TextBlock 
                    FontWeight="Bold" FontSize="14" 
                    Foreground="White" 
@@ -90,12 +93,28 @@
                 <Label x:Name="Label_UserName" Content="Déconnecté" Margin="10,0,0,0" VerticalAlignment="Center" Foreground="White" FontSize="16" HorizontalAlignment="Left" Width="145"/>
             </Grid>
 
-            <!-- Grid JDT -->
+            <!-- StackPanel JDT -->
             <Grid x:Name="Grid_JDT" Margin="0,76,0,0">
-                <Grid x:Name="Grid_JDT_Titles" Background="#FFEA3434" Height="42" VerticalAlignment="Top"/>
-                <Grid x:Name="Grid_JDT_Total" Background="#FF38E220" Height="42" VerticalAlignment="Bottom"/>
+                <Grid x:Name="Grid_JDT_Titles" Background="#FFEA3434" Height="42" VerticalAlignment="Top" Margin="17,0,17,0">
+                </Grid>
+                <ScrollViewer Margin="17,42,0,42" Visibility="Hidden">
+                    <StackPanel x:Name="StackPanel_JDT_Content" Background="#FF34DDEA">
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Grid Repo/user list -->
+                <Grid x:Name="Grid_UserRepoList" Margin="17,42,17,42">
+
+                </Grid>
+                
+                <Grid x:Name="Grid_JDT_Total" Background="#FF38E220" Margin="17,0,17,0" Height="42" VerticalAlignment="Bottom">
+                    <Button x:Name="Button_Display" Content="Afficher" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF637687" Foreground="White" BorderThickness="0" Click="Button_Display_Click" Width="56" IsEnabled="False"/>
+
+                </Grid>
             </Grid>
             <Grid/>
+            <Button x:Name="changeVisibility" Content="Button" HorizontalAlignment="Left" Margin="538,28,0,0" VerticalAlignment="Top" Click="changeVisibility_Click" />
         </Grid>
     </DockPanel>
 </Window>

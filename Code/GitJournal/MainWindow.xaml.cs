@@ -18,6 +18,9 @@ namespace GitJournal
     public partial class MainWindow : Window
     {
         Controller _controller;
+
+        public int _pageId {  get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -31,11 +34,33 @@ namespace GitJournal
             initClasses();
 
             _controller.retrivePAT();
+
+            Grid_UserRepoList.Children.Add(_controller._RepoList);
+            Grid_UserRepoList.Children.Add(_controller._UserList);
+
+            (Grid_UserRepoList.Children[0] as List_Items).HorizontalAlignment = HorizontalAlignment.Left;
+
+            (Grid_UserRepoList.Children[0] as List_Items).Height = Grid_UserRepoList.Height - 10;
+
+            (Grid_UserRepoList.Children[0] as List_Items).Width = Grid_UserRepoList.ActualWidth / 10 * 5;
+
+            (Grid_UserRepoList.Children[0] as List_Items).Margin = new Thickness(50, 5, 0, 5);
+
+
+            (Grid_UserRepoList.Children[1] as List_Items).HorizontalAlignment = HorizontalAlignment.Right;
+
+            (Grid_UserRepoList.Children[1] as List_Items).Height = Grid_UserRepoList.Height - 10;
+
+            (Grid_UserRepoList.Children[1] as List_Items).Width = Grid_UserRepoList.ActualWidth / 10 * 3;
+
+            (Grid_UserRepoList.Children[1] as List_Items).Margin = new Thickness(0, 5, 50, 5);
+
+            changePage(1);
         }
 
         private void initClasses()
         {
-            _controller._PATmanager = new PAT_manager(_controller);
+            
         }
 
         private void PATBUTTON_Click(object sender, RoutedEventArgs e)
@@ -114,6 +139,45 @@ namespace GitJournal
         {
             Label_UserName.Content = userName;
             Image_UserIcon.Source = userIcon;
+        }
+
+        public void changePage(int page)
+        {
+            switch(page)
+            {
+                case 0:
+                    break;
+                case 1:
+                    Grid_UserRepoList.Visibility = Visibility.Visible;
+                    Button_Display.Visibility = Visibility.Visible;
+                    StackPanel_JDT_Content.Visibility = Visibility.Hidden;
+                    break;
+                case 2:
+                    StackPanel_JDT_Content.Visibility = Visibility.Visible;
+                    Grid_UserRepoList.Visibility = Visibility.Hidden;
+                    Button_Display.Visibility = Visibility.Hidden;
+                    break;
+            }
+            if (page <= 2 && page >= 0)
+                _pageId = page;
+        }
+
+        private void changeVisibility_Click(object sender, RoutedEventArgs e)
+        {
+            if(_pageId == 1)
+                changePage(2);
+            else if (_pageId == 2)
+                changePage(1);
+        }
+
+        private void Button_Display_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        public void EnableDisplaying()
+        {
+            Button_Display.IsEnabled = true;
         }
     }
 }

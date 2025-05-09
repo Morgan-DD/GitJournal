@@ -52,8 +52,6 @@ namespace GitJournal
             }
             else
             {
-                Debug.WriteLine(File.ReadAllText(file.FullName));
-
                 // if the file exist, retrive the data
                 returnValue = File.ReadAllText(file.FullName);
                 // retrive the token and test it, if he is valid we save it, otherwise we dont save it and the user will have to give it again

@@ -59,7 +59,8 @@ namespace GitJournal
                 // retrive the token and test it, if he is valid we save it, otherwise we dont save it and the user will have to give it again
                 if (!await CheckTokenAsync(returnValue))
                 {
-                    returnValue = null;
+                    returnValue = String.Empty;
+                    File.WriteAllText(_FileName, returnValue);
                 }
             }
 
@@ -84,7 +85,7 @@ namespace GitJournal
                 else
                 {
                     MessageBox.Show("Clé invalide");
-                    returnValue = null;
+                    returnValue = String.Empty;
                     File.WriteAllText(_FileName, returnValue);
                 }
             }

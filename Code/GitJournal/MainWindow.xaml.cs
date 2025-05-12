@@ -55,9 +55,12 @@ namespace GitJournal
 
             (Grid_UserRepoList.Children[1] as List_Items).Margin = new Thickness(0, 5, 50, 5);
 
-            changePage(1);
-
             _controller._Gitjmanager.createFolderIfDontExist();
+
+            Grid_JDT_Titles.Children.Add(_controller._TitleBar);
+            Grid_JDT_Total.Children.Add(_controller._TotalBar);
+
+            changePage(1);
         }
 
         private void initClasses()
@@ -149,15 +152,24 @@ namespace GitJournal
             {
                 case 0:
                     break;
-                case 1:
+                case 1: // page to choose the repo
                     Grid_UserRepoList.Visibility = Visibility.Visible;
                     Button_Display.Visibility = Visibility.Visible;
                     StackPanel_JDT_Content.Visibility = Visibility.Hidden;
+
+                    Grid_JDT_Titles.Visibility = Visibility.Hidden;
+                    Grid_JDT_Total.Children[1].Visibility = Visibility.Hidden;
                     break;
-                case 2:
+                case 2: // page to display JDT
                     StackPanel_JDT_Content.Visibility = Visibility.Visible;
                     Grid_UserRepoList.Visibility = Visibility.Hidden;
                     Button_Display.Visibility = Visibility.Hidden;
+
+                    Grid_JDT_Titles.Visibility = Visibility.Visible;
+                    (Grid_JDT_Titles.Children[0] as UserControl_TitleBar).DisplayHeader(false);
+                    (Grid_JDT_Total.Children[1] as UserControl_TotalBar).updateTotal(10);
+                    Grid_JDT_Total.Children[0].Visibility = Visibility.Hidden;
+                    Grid_JDT_Total.Children[1].Visibility = Visibility.Visible;
                     break;
             }
             if (page <= 2 && page >= 0)
@@ -174,12 +186,18 @@ namespace GitJournal
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)
         {
-
+            displayJDT();
         }
 
         public void EnableDisplaying()
         {
             Button_Display.IsEnabled = true;
+        }
+
+        public void displayJDT()
+        {
+            changePage(2);
+            Debug.WriteLine($"repo:{_controller._RepoSelected}\nuser:{_controller._UserList}");
         }
     }
 }

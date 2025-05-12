@@ -1,12 +1,22 @@
-{
-	"data": {
-		"CommitId" : "",
-		"Title" : "",
-		"Content" : "",
-		"User" : "",
-		"Status" : "",
-		"Time" : "",
-		"ExistingStatus" : "",
-		"Date" : ""
+[
+	{
+		"CommitId": "",
+		"Title": "",
+		"Content": "",
+		"User": "",
+		"Status": "",
+		"Time": "",
+		"ExistingStatus": "",
+		"Date": ""
+	},
+	{
+		"CommitId": "",
+		"Title": "",
+		"Content": "",
+		"User": "",
+		"Status": "",
+		"Time": "",
+		"ExistingStatus": "",
+		"Date": ""
 	}
-}
+]

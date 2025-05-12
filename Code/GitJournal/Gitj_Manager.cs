@@ -30,5 +30,10 @@ namespace GitJournal
                 Debug.WriteLine($"{_folderName} created");
             }
         }
+
+        public void exportJdtToGitj()
+        {
+
+        }
     }
 }

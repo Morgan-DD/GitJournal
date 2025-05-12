@@ -95,7 +95,7 @@
 
             <!-- StackPanel JDT -->
             <Grid x:Name="Grid_JDT" Margin="0,76,0,0">
-                <Grid x:Name="Grid_JDT_Titles" Background="#FFEA3434" Height="42" VerticalAlignment="Top" Margin="17,0,17,0">
+                <Grid x:Name="Grid_JDT_Titles" Background="#FF24292E" Height="27" VerticalAlignment="Top" Margin="17,0,17,0">
                 </Grid>
                 <ScrollViewer Margin="17,42,0,42" Visibility="Hidden">
                     <StackPanel x:Name="StackPanel_JDT_Content" Background="#FF34DDEA">
@@ -104,11 +104,11 @@
                 </ScrollViewer>
 
                 <!-- Grid Repo/user list -->
-                <Grid x:Name="Grid_UserRepoList" Margin="17,42,17,42">
+                <Grid x:Name="Grid_UserRepoList" Margin="17,27,17,37">
 
                 </Grid>
-                
-                <Grid x:Name="Grid_JDT_Total" Background="#FF38E220" Margin="17,0,17,0" Height="42" VerticalAlignment="Bottom">
+
+                <Grid x:Name="Grid_JDT_Total" Background="#FF24292E" Margin="17,0,17,10" Height="27" VerticalAlignment="Bottom">
                     <Button x:Name="Button_Display" Content="Afficher" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF637687" Foreground="White" BorderThickness="0" Click="Button_Display_Click" Width="56" IsEnabled="False"/>
 
                 </Grid>

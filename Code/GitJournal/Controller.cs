@@ -16,9 +16,13 @@ namespace GitJournal
         PAT_manager _PATmanager { get; set; }
         API_manager _APImanager { get; set; }
         public Gitj_Manager _Gitjmanager { get; set; }
+        JDT_manager _JDTmanager { get; set; }
 
         public List_Items _RepoList { get; set; }
         public List_Items _UserList { get; set; }
+        public UserControl_TitleBar _TitleBar { get; set; }
+        public UserControl_TotalBar _TotalBar { get; set; }
+        public UserControl_JDT _JDT { get; set; }
 
         public string _PATToken { get; set; }
         public string _ClientName { get; set; }
@@ -34,10 +38,14 @@ namespace GitJournal
             _PATmanager = new PAT_manager(this);
             _APImanager = new API_manager(this);
             _Gitjmanager = new Gitj_Manager(this);
+            _JDTmanager = new JDT_manager(this);
 
             // visual objects
             _RepoList = new List_Items(false, this);
             _UserList = new List_Items(true, this);
+            _TitleBar = new UserControl_TitleBar();
+            _TotalBar = new UserControl_TotalBar();
+            _JDT = new UserControl_JDT();
         }
 
         public async void Login()

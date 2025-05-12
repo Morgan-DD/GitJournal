@@ -1,0 +1,3 @@
+contretemp:
+
+réflexion et mise en place de la gestion des commits ou la durée et status n'a pas été proprement implementée

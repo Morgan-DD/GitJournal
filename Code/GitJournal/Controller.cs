@@ -13,10 +13,10 @@ namespace GitJournal
     public class Controller
     {
         public MainWindow _mainWindow { get; set; }
-        PAT_manager _PATmanager { get; set; }
-        API_manager _APImanager { get; set; }
+        public PAT_manager _PATmanager { get; set; }
+        public API_manager _APImanager { get; set; }
         public Gitj_Manager _Gitjmanager { get; set; }
-        JDT_manager _JDTmanager { get; set; }
+        public JDT_manager _JDTmanager { get; set; }
 
         public List_Items _RepoList { get; set; }
         public List_Items _UserList { get; set; }

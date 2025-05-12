@@ -167,7 +167,7 @@ namespace GitJournal
 
                     Grid_JDT_Titles.Visibility = Visibility.Visible;
                     (Grid_JDT_Titles.Children[0] as UserControl_TitleBar).DisplayHeader(false);
-                    (Grid_JDT_Total.Children[1] as UserControl_TotalBar).updateTotal(10);
+                    (Grid_JDT_Total.Children[1] as UserControl_TotalBar).updateTotal(new TimeSpan(1, 30, 0));
                     Grid_JDT_Total.Children[0].Visibility = Visibility.Hidden;
                     Grid_JDT_Total.Children[1].Visibility = Visibility.Visible;
                     break;
@@ -178,10 +178,7 @@ namespace GitJournal
 
         private void changeVisibility_Click(object sender, RoutedEventArgs e)
         {
-            if(_pageId == 1)
-                changePage(2);
-            else if (_pageId == 2)
-                changePage(1);
+            _controller._APImanager.getAllCommits(_controller._RepoSelected);
         }
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)
@@ -196,8 +193,15 @@ namespace GitJournal
 
         public void displayJDT()
         {
+            // need to await so the commtis are pulled before display on _controller._JDT.displayJDT(_controller._JDTmanager._commits);
+
+            _controller._APImanager.getAllCommits(_controller._RepoSelected);
+
+            _controller._JDTmanager.sortByDate();
+
+            _controller._JDT.displayJDT(_controller._JDTmanager._commits);
+
             changePage(2);
-            Debug.WriteLine($"repo:{_controller._RepoSelected}\nuser:{_controller._UserList}");
         }
     }
 }

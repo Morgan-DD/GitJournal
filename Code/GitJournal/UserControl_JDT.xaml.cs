@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,15 @@ namespace GitJournal
         public UserControl_JDT()
         {
             InitializeComponent();
+        }
+
+        public void displayJDT(List<Commit_Info>commits)
+        {
+            Debug.WriteLine("Displaying Commits !!");
+            foreach (Commit_Info comm in commits)
+            {
+                Debug.WriteLine(comm.Title);
+            }
         }
     }
 }

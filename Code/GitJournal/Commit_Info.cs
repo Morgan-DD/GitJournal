@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GitJournal
 {
-    internal class Commit_Info
+    public class Commit_Info
     {
         public string CommitId { get; set; }
         public string Title { get; set; }

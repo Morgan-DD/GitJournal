@@ -19,7 +19,7 @@ using System.Drawing.Imaging;
 
 namespace GitJournal
 {
-    internal class PAT_manager
+    public class PAT_manager
     {
         static Controller _controller;
 

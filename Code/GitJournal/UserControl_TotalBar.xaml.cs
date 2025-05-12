@@ -25,9 +25,9 @@ namespace GitJournal
             InitializeComponent();
         }
 
-        public void updateTotal(int newTotal)
+        public void updateTotal(TimeSpan newTotal)
         {
-            Label_TotalHours.Content = $"{newTotal}H";
+            Label_TotalHours.Content = $"{newTotal}";
         }
     }
 }

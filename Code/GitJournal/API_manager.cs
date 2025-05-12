@@ -7,11 +7,17 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text.RegularExpressions;
+using System.Windows.Shapes;
+using System.Windows;
+using System.Globalization;
 
 namespace GitJournal
 {
 
-    internal class API_manager
+    public class API_manager
     {
         Controller _controller;
 
@@ -86,7 +92,7 @@ namespace GitJournal
                         {
                             RepoUsersList.Add(user["login"]?.ToString());
                         }
-                        
+
                     }
                     else
                     {
@@ -101,6 +107,92 @@ namespace GitJournal
                 Debug.WriteLine($"Error: {ex.Message}");
             }
             return RepoUsersList;
+        }
+
+        public async void getAllCommits(string repoName)
+        {
+            string regexForHourStatus = @"\[(.*?)\]";
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("C#App");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _controller._PATToken);
+
+                HttpResponseMessage response = await client.GetAsync($"https://api.github.com/repos/{repoName}/commits");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+                    JArray CommitsList = JArray.Parse(json); // Parse the JSON array
+
+                    foreach (JObject commit in CommitsList)
+                    {
+                        string message = commit["commit"]["message"].ToString();
+                        string title = "";
+                        string content = "";
+                        string status = "";
+                        TimeSpan duration = new TimeSpan(0, 0, 0);
+                        DateTime date = DateTime.ParseExact(commit["commit"]["committer"]["date"].ToString().Split(" ")[0], "dd.MM.yyyy", CultureInfo.InvariantCulture);
+
+                        if (message.Contains("\n\n"))
+                        {
+                            title = message.Split("\n\n")[0];
+                            content = message.Replace((title + "\n\n"), "");
+
+                            MatchCollection matches = Regex.Matches(content, regexForHourStatus);
+                            if (matches.Count >= 2)
+                            {
+                                if (matches[0].ToString().Any(char.IsDigit))
+                                {
+                                    string durationString = matches[0].ToString().Replace("[", "").Replace("]", "").ToLower();
+                                    duration = transformStringToDuration(durationString);
+
+                                    status = matches[1].ToString().Replace("[", "").Replace("]", "");
+
+                                }
+                                else
+                                {
+                                    string durationString = matches[1].ToString().Replace("[", "").Replace("]", "").ToLower();
+                                    duration = transformStringToDuration(durationString);
+
+                                    status = matches[0].ToString().Replace("[", "").Replace("]", "");
+                                }
+
+                                content = string.Join(Environment.NewLine, content.Split(Environment.NewLine.ToCharArray()).Skip(1).ToArray());
+                            }
+                        }
+                        else
+                            title = message;
+
+                        _controller._JDTmanager.addNewEntry(commit["sha"].ToString(), title, content, commit["commit"]["author"]["name"].ToString(), status, duration, true, date);
+                    }
+                }
+                else
+                {
+                    throw new Exception($"GitHub API request failed: {response.StatusCode}");
+                }
+            }
+        }
+
+        private TimeSpan transformStringToDuration(string durationSrting)
+        {
+            TimeSpan duration = new TimeSpan(0, 0, 0);
+
+            if (durationSrting.Contains("h"))
+            {
+                if (durationSrting.Split("h").Count() > 1)
+                {
+                    if (durationSrting.Split("h")[1].Any(char.IsDigit))
+                        duration = new TimeSpan(Convert.ToInt32(new string(durationSrting.Split("h")[0].Where(char.IsDigit).ToArray())), Convert.ToInt32(new string(durationSrting.Split("h")[1].Where(char.IsDigit).ToArray())), 0);
+                    else
+                        duration = new TimeSpan(Convert.ToInt32(new string(durationSrting.Split("h")[0].Where(char.IsDigit).ToArray())), 0, 0);
+                }
+            }
+            else
+            {
+                duration = new TimeSpan(0, Convert.ToInt32(new string(durationSrting.Where(char.IsDigit).ToArray())), 0);
+            }
+
+            return duration;
         }
     }
 }

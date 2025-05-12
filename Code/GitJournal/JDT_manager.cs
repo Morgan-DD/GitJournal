@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace GitJournal
 {
-    internal class JDT_manager
+    public class JDT_manager
     {
         Controller _controller;
-        List<Commit_Info> _commits = new List<Commit_Info>();
+        public List<Commit_Info> _commits { get; set; }
 
         public JDT_manager(Controller controller)
         {
             _controller = controller;
+            _commits = new List<Commit_Info>();
         }
 
         public void addNewEntry(string CommitId, string title, string content, string user, string status, TimeSpan Duration, bool ExistingStatus, DateTime Date)
@@ -42,6 +43,7 @@ namespace GitJournal
 
         }
 
+        /*
         public static List<Commit_Info[]> SplitCommitsByDay(List<Commit_Info> commits)
         {
             return commits
@@ -65,5 +67,6 @@ namespace GitJournal
             }
 
         }
+        */
     }
 }

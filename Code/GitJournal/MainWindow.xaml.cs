@@ -56,6 +56,8 @@ namespace GitJournal
             (Grid_UserRepoList.Children[1] as List_Items).Margin = new Thickness(0, 5, 50, 5);
 
             changePage(1);
+
+            _controller._Gitjmanager.createFolderIfDontExist();
         }
 
         private void initClasses()

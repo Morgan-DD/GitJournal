@@ -40,7 +40,7 @@ namespace GitJournal
             // if not exist create it else take it and try
 
             // create the folder if not exist
-            System.IO.FileInfo file = new System.IO.FileInfo(_FileName);
+            FileInfo file = new FileInfo(_FileName);
             if (!file.Directory.Exists)
             {
                 file.Directory.Create();

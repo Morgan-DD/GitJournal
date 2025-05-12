@@ -157,7 +157,7 @@ namespace GitJournal
                                     status = matches[0].ToString().Replace("[", "").Replace("]", "");
                                 }
 
-                                content = string.Join(Environment.NewLine, content.Split(Environment.NewLine.ToCharArray()).Skip(1).ToArray());
+                                content = string.Join(Environment.NewLine, content.Split(Environment.NewLine.ToCharArray()).Skip(1).ToArray()).ToUpper();
                             }
                         }
                         else

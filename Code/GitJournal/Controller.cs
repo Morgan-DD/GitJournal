@@ -14,8 +14,8 @@ namespace GitJournal
     {
         public MainWindow _mainWindow { get; set; }
         PAT_manager _PATmanager { get; set; }
-
         API_manager _APImanager { get; set; }
+        public Gitj_Manager _Gitjmanager { get; set; }
 
         public List_Items _RepoList { get; set; }
         public List_Items _UserList { get; set; }
@@ -33,6 +33,7 @@ namespace GitJournal
             // logic objects
             _PATmanager = new PAT_manager(this);
             _APImanager = new API_manager(this);
+            _Gitjmanager = new Gitj_Manager(this);
 
             // visual objects
             _RepoList = new List_Items(false, this);

@@ -157,13 +157,13 @@ namespace GitJournal
                                     status = matches[0].ToString().Replace("[", "").Replace("]", "");
                                 }
 
-                                content = string.Join(Environment.NewLine, content.Split(Environment.NewLine.ToCharArray()).Skip(1).ToArray()).ToUpper();
+                                content = string.Join(Environment.NewLine, content.Split(Environment.NewLine.ToCharArray()).Skip(1).ToArray());
                             }
                         }
                         else
                             title = message;
 
-                        _controller._JDTmanager.addNewEntry(commit["sha"].ToString(), title, content, commit["commit"]["author"]["name"].ToString(), status, duration, true, date);
+                        _controller._JDTmanager.addNewEntry(commit["sha"].ToString(), title, content, commit["commit"]["author"]["name"].ToString(), status, duration, true, date, commit["html_url"].ToString());
                     }
                 }
                 else

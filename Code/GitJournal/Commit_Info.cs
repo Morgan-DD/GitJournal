@@ -16,5 +16,6 @@ namespace GitJournal
         public TimeSpan Duration { get; set; }
         public bool ExistingStatus { get; set; }
         public DateTime Date { get; set; }
+        public string Url { get; set; }
     }
 }

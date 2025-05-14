@@ -45,7 +45,7 @@ namespace GitJournal
             _UserList = new List_Items(true, this);
             _TitleBar = new UserControl_TitleBar();
             _TotalBar = new UserControl_TotalBar();
-            _JDT = new UserControl_JDT();
+            _JDT = new UserControl_JDT(this);
         }
 
         public async void Login()

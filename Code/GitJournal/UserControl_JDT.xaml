@@ -7,8 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer>
-        <StackPanel x:Name="StackPanel_Main" Background="#FF637687">
-            
-        </StackPanel>        
+        <StackPanel x:Name="StackPanel_Main"/>
     </ScrollViewer>
 </UserControl>

@@ -11,16 +11,19 @@
   <ItemGroup>
     <None Remove="Ressources\icon-white.png" />
     <None Remove="Ressources\logo-white.png" />
+    <None Remove="Ressources\redirect.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.5" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Ressources\icon-white.png" />
     <Resource Include="Ressources\logo-white.png" />
+    <Resource Include="Ressources\redirect.png" />
   </ItemGroup>
 
   <ItemGroup>

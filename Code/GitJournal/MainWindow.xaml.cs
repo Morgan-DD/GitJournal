@@ -35,30 +35,31 @@ namespace GitJournal
 
             _controller.retrivePAT();
 
-            Grid_UserRepoList.Children.Add(_controller._RepoList);
-            Grid_UserRepoList.Children.Add(_controller._UserList);
+            Grid_JDT_Content.Children.Add(_controller._RepoList);
+            Grid_JDT_Content.Children.Add(_controller._UserList);
 
-            (Grid_UserRepoList.Children[0] as List_Items).HorizontalAlignment = HorizontalAlignment.Left;
+            (Grid_JDT_Content.Children[0] as List_Items).HorizontalAlignment = HorizontalAlignment.Left;
 
-            (Grid_UserRepoList.Children[0] as List_Items).Height = Grid_UserRepoList.Height - 10;
+            (Grid_JDT_Content.Children[0] as List_Items).Height = Grid_JDT_Content.Height - 10;
 
-            (Grid_UserRepoList.Children[0] as List_Items).Width = Grid_UserRepoList.ActualWidth / 10 * 5;
+            (Grid_JDT_Content.Children[0] as List_Items).Width = Grid_JDT_Content.ActualWidth / 10 * 5;
 
-            (Grid_UserRepoList.Children[0] as List_Items).Margin = new Thickness(50, 5, 0, 5);
+            (Grid_JDT_Content.Children[0] as List_Items).Margin = new Thickness(50, 5, 0, 5);
 
 
-            (Grid_UserRepoList.Children[1] as List_Items).HorizontalAlignment = HorizontalAlignment.Right;
+            (Grid_JDT_Content.Children[1] as List_Items).HorizontalAlignment = HorizontalAlignment.Right;
 
-            (Grid_UserRepoList.Children[1] as List_Items).Height = Grid_UserRepoList.Height - 10;
+            (Grid_JDT_Content.Children[1] as List_Items).Height = Grid_JDT_Content.Height - 10;
 
-            (Grid_UserRepoList.Children[1] as List_Items).Width = Grid_UserRepoList.ActualWidth / 10 * 3;
+            (Grid_JDT_Content.Children[1] as List_Items).Width = Grid_JDT_Content.ActualWidth / 10 * 3;
 
-            (Grid_UserRepoList.Children[1] as List_Items).Margin = new Thickness(0, 5, 50, 5);
+            (Grid_JDT_Content.Children[1] as List_Items).Margin = new Thickness(0, 5, 50, 5);
 
             _controller._Gitjmanager.createFolderIfDontExist();
 
             Grid_JDT_Titles.Children.Add(_controller._TitleBar);
             Grid_JDT_Total.Children.Add(_controller._TotalBar);
+            Grid_JDT_Content.Children.Add(_controller._JDT);
 
             changePage(1);
         }
@@ -150,26 +151,31 @@ namespace GitJournal
         {
             switch(page)
             {
-                case 0:
-                    break;
                 case 1: // page to choose the repo
-                    Grid_UserRepoList.Visibility = Visibility.Visible;
                     Button_Display.Visibility = Visibility.Visible;
                     StackPanel_JDT_Content.Visibility = Visibility.Hidden;
 
                     Grid_JDT_Titles.Visibility = Visibility.Hidden;
                     Grid_JDT_Total.Children[1].Visibility = Visibility.Hidden;
+
+                    Grid_JDT_Content.Children[0].Visibility = Visibility.Visible;
+                    Grid_JDT_Content.Children[1].Visibility = Visibility.Visible;
+                    Grid_JDT_Content.Children[2].Visibility = Visibility.Hidden;
                     break;
                 case 2: // page to display JDT
                     StackPanel_JDT_Content.Visibility = Visibility.Visible;
-                    Grid_UserRepoList.Visibility = Visibility.Hidden;
                     Button_Display.Visibility = Visibility.Hidden;
 
                     Grid_JDT_Titles.Visibility = Visibility.Visible;
                     (Grid_JDT_Titles.Children[0] as UserControl_TitleBar).DisplayHeader(false);
                     (Grid_JDT_Total.Children[1] as UserControl_TotalBar).updateTotal(new TimeSpan(1, 30, 0));
+
                     Grid_JDT_Total.Children[0].Visibility = Visibility.Hidden;
                     Grid_JDT_Total.Children[1].Visibility = Visibility.Visible;
+
+                    Grid_JDT_Content.Children[0].Visibility = Visibility.Hidden;
+                    Grid_JDT_Content.Children[1].Visibility = Visibility.Hidden;
+                    Grid_JDT_Content.Children[2].Visibility = Visibility.Visible;
                     break;
             }
             if (page <= 2 && page >= 0)
@@ -178,7 +184,7 @@ namespace GitJournal
 
         private void changeVisibility_Click(object sender, RoutedEventArgs e)
         {
-            _controller._JDT.displayJDT(_controller._JDTmanager._commits);
+            _controller._JDT.displayJDT();
         }
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)
@@ -199,7 +205,7 @@ namespace GitJournal
 
             _controller._JDTmanager.sortByDate();
 
-            _controller._JDT.displayJDT(_controller._JDTmanager._commits);
+            _controller._JDT.displayJDT();
 
             changePage(2);
         }

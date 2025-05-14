@@ -9,7 +9,7 @@ namespace GitJournal
     public class JDT_manager
     {
         Controller _controller;
-        public List<Commit_Info> _commits { get; set; }
+        public static List<Commit_Info> _commits { get; set; }
 
         public JDT_manager(Controller controller)
         {
@@ -17,7 +17,7 @@ namespace GitJournal
             _commits = new List<Commit_Info>();
         }
 
-        public void addNewEntry(string CommitId, string title, string content, string user, string status, TimeSpan Duration, bool ExistingStatus, DateTime Date)
+        public void addNewEntry(string CommitId, string title, string content, string user, string status, TimeSpan Duration, bool ExistingStatus, DateTime Date, string url)
         {
             _commits.Add(new Commit_Info
             {
@@ -25,10 +25,11 @@ namespace GitJournal
                 Title = title,
                 Content = content,
                 User = user,
-                Status = status,
+                Status = status.ToUpper(),
                 Duration = Duration,
                 ExistingStatus = ExistingStatus,
-                Date = Date
+                Date = Date,
+                Url = url
             });
         }
 
@@ -43,10 +44,10 @@ namespace GitJournal
 
         }
 
-        /*
-        public static List<Commit_Info[]> SplitCommitsByDay(List<Commit_Info> commits)
+        
+        public List<Commit_Info[]> SplitCommitsByDay()
         {
-            return commits
+            return _commits
                 .GroupBy(c => c.Date.Date)
                 .OrderBy(g => g.Key) // optional: sort days chronologically
                 .Select(g => g.ToArray())
@@ -55,7 +56,7 @@ namespace GitJournal
 
         private void test()
         {
-            List<Commit_Info[]> dailyCommits = SplitCommitsByDay(_commits);
+            List<Commit_Info[]> dailyCommits = SplitCommitsByDay();
 
             foreach (var dayGroup in dailyCommits)
             {
@@ -67,6 +68,6 @@ namespace GitJournal
             }
 
         }
-        */
+        
     }
 }

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:GitJournal"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border BorderBrush="Black" BorderThickness="0,1,0,0">
+    <Border BorderBrush="Black" BorderThickness="0,2,0,0">
         <Grid Background="#637687">
             <Label x:Name="Label_Title" Content="Grand Total" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontSize="14" VerticalContentAlignment="Center"/>
             <Label x:Name="Label_TotalHours" Content="Label" HorizontalAlignment="Right" VerticalAlignment="Top" Foreground="White" FontSize="14" VerticalContentAlignment="Center"/>

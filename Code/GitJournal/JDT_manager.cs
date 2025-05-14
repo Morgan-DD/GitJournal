@@ -9,7 +9,7 @@ namespace GitJournal
     public class JDT_manager
     {
         Controller _controller;
-        public static List<Commit_Info> _commits { get; set; }
+        public List<Commit_Info> _commits { get; set; }
 
         public JDT_manager(Controller controller)
         {
@@ -47,11 +47,13 @@ namespace GitJournal
         
         public List<Commit_Info[]> SplitCommitsByDay()
         {
-            return _commits
+            List<Commit_Info[]> listOfCommits = _commits
                 .GroupBy(c => c.Date.Date)
                 .OrderBy(g => g.Key) // optional: sort days chronologically
                 .Select(g => g.ToArray())
                 .ToList();
+            listOfCommits.Reverse();
+            return listOfCommits;
         }
 
         private void test()

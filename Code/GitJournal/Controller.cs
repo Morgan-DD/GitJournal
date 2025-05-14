@@ -92,5 +92,10 @@ namespace GitJournal
         {
             _UserList.DisplayItems(await _APImanager.loadUserFromRepo(repoName), _ClientName);
         }
+
+        public void changeRepo()
+        {
+            
+        }
     }
 }

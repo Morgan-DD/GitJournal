@@ -34,12 +34,17 @@ namespace GitJournal
         {
             if (StackPanel_main.Children.Count > 0)
             {
+                try
+                {
+
                 ((StackPanel_main.Children[0] as Grid).Children[0] as Label).Width = title;
                 ((StackPanel_main.Children[1] as Grid).Children[0] as Label).Width = content;
                 if (!ignorUser)
                     ((StackPanel_main.Children[2] as Grid).Children[0] as Label).Width = user;
                 ((StackPanel_main.Children[3] as Grid).Children[0] as Label).Width = status;
                 ((StackPanel_main.Children[4] as Grid).Children[0] as Label).Width = duration;
+                }
+                catch { }
             }
         }
 
@@ -50,7 +55,10 @@ namespace GitJournal
 
             Grid Grid_Entry = new Grid();
             Grid_Entry.Width = StackPanel_main.ActualWidth;
-            // Define the columns
+            int statusColumnIndex = ignorUser ? 2 : 3;
+            int durationColumnIndex = ignorUser ? 3 : 4;
+
+            // Column definitions
             Grid_Entry.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });  // Title
             Grid_Entry.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(2, GridUnitType.Star) });  // Content
             if (!ignorUser)
@@ -66,15 +74,15 @@ namespace GitJournal
             Label Label_Status = new Label() { Content = _columnName[3], HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White };
             Label Label_Duration = new Label() { Content = _columnName[4], HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White };
 
-            // Set columns for each control
+            // Set columns
             Grid.SetColumn(Label_Title, 0);
             Grid.SetColumn(Label_Content, 1);
             if (!ignorUser)
             {
                 Grid.SetColumn(Label_User, 2);
             }
-            Grid.SetColumn(Label_Status, 3);
-            Grid.SetColumn(Label_Duration, 4);
+            Grid.SetColumn(Label_Status, statusColumnIndex);
+            Grid.SetColumn(Label_Duration, durationColumnIndex);
 
             // Add controls to the grid
             Grid_Entry.Children.Add(Label_Title);
@@ -85,34 +93,6 @@ namespace GitJournal
             }
             Grid_Entry.Children.Add(Label_Status);
             Grid_Entry.Children.Add(Label_Duration);
-            /*
-            foreach (string columnName in _columnName)
-            {
-                if (ignorUser && columnName == "Utilisateur")
-                {
-
-                }
-                else
-                {
-
-
-                    Label lbl = new Label();
-
-                    lbl.Content = columnName;
-                    lbl.Foreground = Brushes.White;
-                    lbl.BorderBrush = Brushes.Black;
-                    if (id > 0)
-                        lbl.BorderThickness = new Thickness(2, 0, 0, 0);
-                    if (id == 1 && ignorUser)
-                        lbl.Width = StackPanel_main.ActualWidth / 100 * (_ratio[id] + _ratio[2]);
-                    else
-                        lbl.Width = StackPanel_main.ActualWidth / 100 * _ratio[id];
-                    lbl.FontSize = 14;
-                    lbl.VerticalContentAlignment = VerticalAlignment.Center;
-                }
-                id++;
-            }
-            */
             StackPanel_main.Children.Add(Grid_Entry);
         }
     }

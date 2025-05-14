@@ -167,7 +167,6 @@ namespace GitJournal
                     Button_Display.Visibility = Visibility.Hidden;
 
                     Grid_JDT_Titles.Visibility = Visibility.Visible;
-                    (Grid_JDT_Titles.Children[0] as UserControl_TitleBar).DisplayHeader(false);
 
                     Grid_JDT_Total.Children[0].Visibility = Visibility.Hidden;
                     Grid_JDT_Total.Children[1].Visibility = Visibility.Visible;
@@ -183,7 +182,7 @@ namespace GitJournal
 
         private void changeVisibility_Click(object sender, RoutedEventArgs e)
         {
-            _controller._JDT.displayJDT();
+            _controller._JDT.displayJDT(_controller._UserList.getUsersChecked());
         }
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)
@@ -204,9 +203,15 @@ namespace GitJournal
 
             _controller._JDTmanager.sortByDate();
 
-            _controller._JDT.displayJDT();
+            _controller._JDT.displayJDT(_controller._UserList.getUsersChecked());
 
             changePage(2);
+        }
+
+        private void Button_ChangeRepo_Click(object sender, RoutedEventArgs e)
+        {
+            _controller._JDTmanager._commits.Clear();
+            changePage(1);
         }
     }
 }

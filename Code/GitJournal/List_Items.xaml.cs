@@ -95,5 +95,23 @@ namespace GitJournal
         {
             (((sender as Border).Child as StackPanel).Children[0] as CheckBox).IsChecked = !(((sender as Border).Child as StackPanel).Children[0] as CheckBox).IsChecked;
         }
+
+        public List<string> getUsersChecked()
+        {
+            List<string> UsersList = new List<string>();
+
+            if (_AddCheckboxes)
+            {
+                foreach(Border border in StackPanel_Main.Children)
+                {
+                    if(((border.Child as StackPanel).Children[0] as CheckBox).IsChecked == true)
+                    {
+                        UsersList.Add(((border.Child as StackPanel).Children[1] as Label).Content.ToString());
+                    }
+                }
+            }
+
+            return UsersList;
+        }
     }
 }

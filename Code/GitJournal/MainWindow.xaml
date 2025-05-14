@@ -84,7 +84,7 @@
                 <Button x:Name="Button_Add" Content="Ajouter" HorizontalAlignment="Left" Margin="105,0,0,0" VerticalAlignment="Center" Width="70" Background="#FF637687" Foreground="White" BorderThickness="0"/>
                 <Button x:Name="Button_Export" Content="Exporter" HorizontalAlignment="Left" Margin="189,0,0,0" VerticalAlignment="Center" Width="70" Background="#FF637687" Foreground="White" BorderThickness="0"/>
                 <Button x:Name="Button_ChangeDate" Content="Changer la date" HorizontalAlignment="Left" Margin="274,0,0,0" VerticalAlignment="Center" Width="112" Background="#FF637687" Foreground="White" BorderThickness="0"/>
-                <Button x:Name="Button_ChangeRepo" Content="Changer de repo" HorizontalAlignment="Left" Margin="400,0,0,0" VerticalAlignment="Center" Width="99" Background="#FF637687" Foreground="White" BorderThickness="0"/>
+                <Button x:Name="Button_ChangeRepo" Content="Changer de repo" HorizontalAlignment="Left" Margin="400,0,0,0" VerticalAlignment="Center" Width="99" Background="#FF637687" Foreground="White" BorderThickness="0" Click="Button_ChangeRepo_Click"/>
             </Grid>
 
             <!-- Grid Username -->

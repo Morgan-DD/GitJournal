@@ -44,6 +44,7 @@ namespace GitJournal
             TimeSpan TotalDuration = new TimeSpan(0, 0, 0, 0);
             foreach (Commit_Info[] commitGroupByDay in _controller._JDTmanager.SplitCommitsByDay())
             {
+                TimeSpan dayTotal = new TimeSpan(0,0,0, 0);
                 StackPanel StackPanel_CommitDay = new StackPanel();
                 StackPanel StackPanel_Date = new StackPanel();
 
@@ -68,7 +69,7 @@ namespace GitJournal
                 {
                     if (UsersToDisplay.Contains(SingleCommit.User))
                     {
-
+                        dayTotal += SingleCommit.Duration;
                         TotalDuration += SingleCommit.Duration;
 
                         // Create a Border for the entry
@@ -210,6 +211,17 @@ namespace GitJournal
                         StackPanel_CommitDay.Children.Clear();
                     }
                 }
+                Label totalHour = new Label();
+                totalHour.Content = dayTotal;
+                totalHour.Margin = new Thickness(16,0,20,0);
+                totalHour.Foreground = Brushes.White;
+                totalHour.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764"));
+                totalHour.HorizontalContentAlignment = HorizontalAlignment.Right;
+                totalHour.BorderThickness = new Thickness(0, 0, 0, 1);
+
+                StackPanel_CommitDay.Children.Add (totalHour);
+
+                dayTotal = new TimeSpan(0, 0, 0, 0);
 
                 if (displayUserColumn)
                 {

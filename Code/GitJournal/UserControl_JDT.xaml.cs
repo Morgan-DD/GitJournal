@@ -31,7 +31,7 @@ namespace GitJournal
             Debug.WriteLine("Displaying Commits !!");
             foreach (Commit_Info comm in commits)
             {
-                Debug.WriteLine(comm.Title);
+                Debug.WriteLine(comm.Date);
             }
         }
     }

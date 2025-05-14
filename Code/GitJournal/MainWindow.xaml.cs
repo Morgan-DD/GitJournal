@@ -178,7 +178,7 @@ namespace GitJournal
 
         private void changeVisibility_Click(object sender, RoutedEventArgs e)
         {
-            _controller._APImanager.getAllCommits(_controller._RepoSelected);
+            _controller._JDT.displayJDT(_controller._JDTmanager._commits);
         }
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)
@@ -191,11 +191,11 @@ namespace GitJournal
             Button_Display.IsEnabled = true;
         }
 
-        public void displayJDT()
+        public async void displayJDT()
         {
             // need to await so the commtis are pulled before display on _controller._JDT.displayJDT(_controller._JDTmanager._commits);
 
-            _controller._APImanager.getAllCommits(_controller._RepoSelected);
+            await _controller._APImanager.getAllCommits(_controller._RepoSelected);
 
             _controller._JDTmanager.sortByDate();
 

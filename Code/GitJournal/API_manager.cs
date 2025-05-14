@@ -109,7 +109,7 @@ namespace GitJournal
             return RepoUsersList;
         }
 
-        public async void getAllCommits(string repoName)
+        public async Task<bool> getAllCommits(string repoName)
         {
             string regexForHourStatus = @"\[(.*?)\]";
             using (HttpClient client = new HttpClient())
@@ -171,6 +171,7 @@ namespace GitJournal
                     throw new Exception($"GitHub API request failed: {response.StatusCode}");
                 }
             }
+            return true;
         }
 
         private TimeSpan transformStringToDuration(string durationSrting)

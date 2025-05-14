@@ -33,9 +33,9 @@ namespace GitJournal
         public void displayJDT()
         {
             Debug.WriteLine("Displaying Commits !!");
+            TimeSpan TotalDuration = new TimeSpan(0,0,0,0);
             foreach (Commit_Info[] commitGroupByDay in _controller._JDTmanager.SplitCommitsByDay())
             {
-                TimeSpan TotalDuration = new TimeSpan(0);
                 StackPanel StackPanel_CommitDay = new StackPanel();
                 StackPanel StackPanel_Date = new StackPanel();
 
@@ -58,6 +58,7 @@ namespace GitJournal
 
                 foreach (Commit_Info SingleCommit in commitGroupByDay) 
                 {
+                    Debug.WriteLine($"TotalDuration:{TotalDuration}\nSingleCommit.Duration:{SingleCommit.Duration}\n-----------------");
                     TotalDuration += SingleCommit.Duration;
 
                     // Create a Border for the entry
@@ -145,6 +146,7 @@ namespace GitJournal
                 StackPanel_Main.Children.Add(StackPanel_CommitDay);
                 
             }
+            _controller._TotalBar.updateTotal(TotalDuration);
             Debug.WriteLine("End of Displaying Commits !!");
         }
 

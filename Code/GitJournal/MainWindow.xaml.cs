@@ -168,7 +168,6 @@ namespace GitJournal
 
                     Grid_JDT_Titles.Visibility = Visibility.Visible;
                     (Grid_JDT_Titles.Children[0] as UserControl_TitleBar).DisplayHeader(false);
-                    (Grid_JDT_Total.Children[1] as UserControl_TotalBar).updateTotal(new TimeSpan(1, 30, 0));
 
                     Grid_JDT_Total.Children[0].Visibility = Visibility.Hidden;
                     Grid_JDT_Total.Children[1].Visibility = Visibility.Visible;

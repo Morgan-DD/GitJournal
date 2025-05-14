@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace GitJournal
 
         public void updateTotal(TimeSpan newTotal)
         {
-            Label_TotalHours.Content = $"{newTotal}";
+            Label_TotalHours.Content = $"{(int)newTotal.TotalHours}:{newTotal.Minutes:D2}:{newTotal.Seconds:D2}";
         }
     }
 }

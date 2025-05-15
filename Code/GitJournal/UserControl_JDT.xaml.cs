@@ -18,6 +18,7 @@ using Markdig;
 using Microsoft.Web.WebView2;
 using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Web.WebView2.Core;
+using System.IO;
 
 namespace GitJournal
 {
@@ -35,12 +36,15 @@ namespace GitJournal
 
         public async void displayJDT(List<string> UsersToDisplay)
         {
+            if(_controller._isFromGitHub)
+                _controller._ActualGitJPath = System.IO.Path.Combine(_controller._GitJFileDir, $"{_controller._RepoSelected.Replace("/", "@")}.gitj");
+
+
             bool displayUserColumn = UsersToDisplay.Count > 1;
             string baseHtml = "<html><style>html{{background-color: #638764;}}</style></html>";
 
             StackPanel_Main.Children.Clear();
             ScrollViewer_Main.ScrollToTop();
-            Debug.WriteLine("Displaying Commits !!");
             TimeSpan TotalDuration = new TimeSpan(0, 0, 0, 0);
             foreach (Commit_Info[] commitGroupByDay in _controller._JDTmanager.SplitCommitsByDay())
             {
@@ -67,7 +71,7 @@ namespace GitJournal
 
                 foreach (Commit_Info SingleCommit in commitGroupByDay)
                 {
-                    if (UsersToDisplay.Contains(SingleCommit.User))
+                    if (UsersToDisplay.Contains(SingleCommit.User) || !_controller._isFromGitHub)
                     {
                         dayTotal += SingleCommit.Duration;
                         TotalDuration += SingleCommit.Duration;
@@ -138,6 +142,18 @@ namespace GitJournal
                         Label Label_User = new Label() { Content = SingleCommit.User, HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764")), BorderThickness = new Thickness(1, 0, 0, 0) };
                         Label Label_Status = new Label() { Content = SingleCommit.Status, HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764")), BorderThickness = new Thickness(1, 0, 0, 0) };
                         Label Label_Duration = new Label() { Content = SingleCommit.Duration, HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764")), BorderThickness = new Thickness(1, 0, 0, 0) };
+
+                        if (SingleCommit.IsTitleModifed)
+                            Label_Title.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#C4BA7E"));
+
+                        if (SingleCommit.IsContentModifed)
+                            Label_Content.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#C4BA7E"));
+
+                        if (SingleCommit.IsStatusModifed)
+                            Label_Status.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#C4BA7E"));
+
+                        if (SingleCommit.IsTDurationModifed)
+                            Label_Duration.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#C4BA7E"));
 
                         var pipeline = new MarkdownPipelineBuilder()
                             .UseAdvancedExtensions()  // This enables advanced features, including task lists
@@ -234,7 +250,6 @@ namespace GitJournal
                 StackPanel_Main.Children.Add(StackPanel_CommitDay);
             }
             _controller._TotalBar.updateTotal(TotalDuration);
-            Debug.WriteLine("End of Displaying Commits !!");
         }
 
         private void aPicture_MouseUp(object sender, MouseEventArgs e)

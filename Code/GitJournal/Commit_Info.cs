@@ -17,5 +17,11 @@ namespace GitJournal
         public bool ExistingStatus { get; set; }
         public DateTime Date { get; set; }
         public string Url { get; set; }
+        public string Origin { get; set; }
+
+        public bool IsTitleModifed { get; set; }
+        public bool IsContentModifed { get; set; }
+        public bool IsStatusModifed { get; set; }
+        public bool IsTDurationModifed { get; set; }
     }
 }

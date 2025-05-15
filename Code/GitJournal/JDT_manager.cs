@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using System.IO;
+using System.Diagnostics;
 
 namespace GitJournal
 {
@@ -17,9 +20,11 @@ namespace GitJournal
             _commits = new List<Commit_Info>();
         }
 
-        public void addNewEntry(string CommitId, string title, string content, string user, string status, TimeSpan Duration, bool ExistingStatus, DateTime Date, string url)
+        public void addNewEntry(string CommitId, string title, string content, string user, string status, TimeSpan Duration, bool ExistingStatus, DateTime Date, string url, string origin, bool IsTitlemodifed)
         {
-            _commits.Add(new Commit_Info
+            var existing = _commits.FirstOrDefault(c => c.CommitId == CommitId);
+
+            var newCommit = new Commit_Info
             {
                 CommitId = CommitId,
                 Title = title,
@@ -29,9 +34,34 @@ namespace GitJournal
                 Duration = Duration,
                 ExistingStatus = ExistingStatus,
                 Date = Date,
-                Url = url
-            });
+                Url = url,
+                Origin = origin,
+                IsTitleModifed = IsTitlemodifed,
+                IsContentModifed = false,
+                IsStatusModifed = false,
+                IsTDurationModifed = false
+            };
+
+            if (existing != null)
+            {
+                var existingOrigin = existing.Origin?.ToLower();
+                var newOrigin = origin?.ToLower();
+
+                if (existingOrigin == "gitj" && newOrigin != "gitj")
+                {
+                    // Keep existing, do not add new
+                    return;
+                }
+                else
+                {
+                    // Replace existing
+                    _commits.Remove(existing);
+                }
+            }
+
+            _commits.Add(newCommit);
         }
+
 
         public void clearCommits()
         {
@@ -53,6 +83,7 @@ namespace GitJournal
                 .Select(g => g.ToArray())
                 .ToList();
             listOfCommits.Reverse();
+            exportToGitJ();
             return listOfCommits;
         }
 
@@ -70,6 +101,71 @@ namespace GitJournal
             }
 
         }
+
+        public void exportToGitJ(string fullPath = "")
+        {
+            foreach (Commit_Info commit in _commits)
+            {
+                commit.Origin = "GitJ";
+            }
+
+            // Ensure the directory exists
+            if (!Directory.Exists(_controller._GitJFileDir))
+            {
+                Directory.CreateDirectory(_controller._GitJFileDir);
+            }
+
+            // Serialize _commits to JSON
+            string jsonString = JsonSerializer.Serialize(_commits, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            if (string.IsNullOrWhiteSpace(fullPath))
+                // Write to file (creates file if it doesn't exist; overwrites if it does)
+                File.WriteAllText(_controller._ActualGitJPath, jsonString);
+            else
+            {
+                if(_controller._RepoSelected != null)
+                    File.WriteAllText(Path.Combine(fullPath, $"{_controller._RepoSelected.Replace("/", "@")}.gitj"), jsonString);
+                else
+                    File.WriteAllText(Path.Combine(fullPath, "GitJournalExport.gitj"), jsonString);
+            }
+        }
         
+        public bool checkIfGitJExist()
+        {
+            return File.Exists(_controller._ActualGitJPath);
+        }
+
+        public void importFromGitJ(string fullPath = "")
+        {
+            if (string.IsNullOrWhiteSpace(fullPath))
+            {
+                _controller._ActualGitJPath = Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), _controller._GitJFileDir.ToLower(), $"{_controller._RepoSelected.Replace("/", "@")}.gitj");
+                if (checkIfGitJExist())
+                {
+                    string jsonString = File.ReadAllText(_controller._ActualGitJPath);
+                    List<Commit_Info> importedCommits = JsonSerializer.Deserialize<List<Commit_Info>>(jsonString);
+                    if (importedCommits != null)
+                    {
+                        _commits.AddRange(importedCommits);
+                    }
+                }
+            }
+            else
+            {
+                string jsonString = File.ReadAllText(fullPath);
+                List<Commit_Info> importedCommits = JsonSerializer.Deserialize<List<Commit_Info>>(jsonString);
+                if (importedCommits != null)
+                {
+                    _commits.AddRange(importedCommits);
+                }
+
+                _controller._isFromGitHub = false;
+                _controller._mainWindow.displayJDT();
+            }
+        }
+
     }
 }

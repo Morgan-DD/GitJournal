@@ -9,6 +9,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
+using System.Windows.Forms;
 
 namespace GitJournal
 {
@@ -38,7 +40,7 @@ namespace GitJournal
             Grid_JDT_Content.Children.Add(_controller._RepoList);
             Grid_JDT_Content.Children.Add(_controller._UserList);
 
-            (Grid_JDT_Content.Children[0] as List_Items).HorizontalAlignment = HorizontalAlignment.Left;
+            (Grid_JDT_Content.Children[0] as List_Items).HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
 
             (Grid_JDT_Content.Children[0] as List_Items).Height = Grid_JDT_Content.Height - 10;
 
@@ -47,7 +49,7 @@ namespace GitJournal
             (Grid_JDT_Content.Children[0] as List_Items).Margin = new Thickness(50, 5, 0, 5);
 
 
-            (Grid_JDT_Content.Children[1] as List_Items).HorizontalAlignment = HorizontalAlignment.Right;
+            (Grid_JDT_Content.Children[1] as List_Items).HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
 
             (Grid_JDT_Content.Children[1] as List_Items).Height = Grid_JDT_Content.Height - 10;
 
@@ -128,12 +130,12 @@ namespace GitJournal
 
         private void MenuItem_Click_Import(object sender, RoutedEventArgs e)
         {
-
+            ChooseGitJFileAndImport();
         }
 
         private void MenuItem_Click_Export_gitj(object sender, RoutedEventArgs e)
         {
-
+            _controller._JDTmanager.exportToGitJ(choosAFolder());
         }
 
         private void MenuItem_Click_Export_pdf(object sender, RoutedEventArgs e)
@@ -187,6 +189,7 @@ namespace GitJournal
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)
         {
+            _controller._isFromGitHub = true;
             displayJDT();
         }
 
@@ -198,8 +201,8 @@ namespace GitJournal
         public async void displayJDT()
         {
             // need to await so the commtis are pulled before display on _controller._JDT.displayJDT(_controller._JDTmanager._commits);
-
-            await _controller._APImanager.getAllCommits(_controller._RepoSelected);
+            if(_controller._isFromGitHub)
+                await _controller._APImanager.getAllCommits(_controller._RepoSelected);
 
             _controller._JDTmanager.sortByDate();
 
@@ -212,6 +215,45 @@ namespace GitJournal
         {
             _controller._JDTmanager._commits.Clear();
             changePage(1);
+        }
+
+        public void ChooseGitJFileAndImport()
+        {
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.Filter = "GitJ files (*.gitj)|*.gitj";
+            openFileDialog.Title = "Select a GitJ file";
+
+            bool? result = openFileDialog.ShowDialog();
+
+            if (result == true)
+            {
+                string filePath = openFileDialog.FileName;
+                _controller._ActualGitJPath = filePath;
+                _controller._JDTmanager.importFromGitJ(filePath);
+            }
+        }
+
+        public string choosAFolder()
+        {
+            string folderPath = "";
+            using (var folderDialog = new FolderBrowserDialog())
+            {
+                folderDialog.Description = "Select a folder to export the .gitj file";
+                folderDialog.UseDescriptionForTitle = true;
+
+                DialogResult result = folderDialog.ShowDialog();
+
+                if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(folderDialog.SelectedPath))
+                {
+                    folderPath = folderDialog.SelectedPath;
+                }
+            }
+            return folderPath;
+        }
+
+        private void Button_Export_Click(object sender, RoutedEventArgs e)
+        {
+            _controller._JDTmanager.exportToGitJ(choosAFolder());
         }
     }
 }

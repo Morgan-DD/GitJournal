@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
@@ -29,6 +30,12 @@ namespace GitJournal
         public BitmapImage _ClientAvatar { get; set; }
 
         public string _RepoSelected { get; set; }
+
+
+        public string _GitJFileDir = "GitJ_Files";
+
+        public bool _isFromGitHub = false;
+        public string _ActualGitJPath = "";
 
         public Controller(MainWindow mainWindow)
         {

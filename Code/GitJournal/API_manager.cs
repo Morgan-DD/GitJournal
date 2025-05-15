@@ -31,7 +31,6 @@ namespace GitJournal
         /// </summary>
         public async Task<List<string>> getUserRepo()
         {
-            Debug.WriteLine(_controller._PATToken);
             List<string> userRepo = new List<string>();
             string json;
             try
@@ -111,6 +110,8 @@ namespace GitJournal
 
         public async Task<bool> getAllCommits(string repoName)
         {
+            _controller._JDTmanager.importFromGitJ();
+
             string regexForHourStatus = @"\[(.*?)\]";
             using (HttpClient client = new HttpClient())
             {
@@ -163,7 +164,7 @@ namespace GitJournal
                         else
                             title = message;
 
-                        _controller._JDTmanager.addNewEntry(commit["sha"].ToString(), title, content, commit["commit"]["author"]["name"].ToString(), status, duration, true, date, commit["html_url"].ToString());
+                        _controller._JDTmanager.addNewEntry(commit["sha"].ToString(), title, content, commit["commit"]["author"]["name"].ToString(), status, duration, true, date, commit["html_url"].ToString().ToLowerInvariant(), "GitHub", false);
                     }
                 }
                 else

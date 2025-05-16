@@ -74,8 +74,11 @@ namespace GitJournal
 
                 foreach (Commit_Info SingleCommit in commitGroupByDay)
                 {
+                    Debug.WriteLine($"title:{SingleCommit.Title}");
+
                     if (UsersToDisplay.Contains(SingleCommit.User) || !_controller._isFromGitHub)
                     {
+                        Debug.WriteLine("in!");
                         dayTotal += SingleCommit.Duration;
                         TotalDuration += SingleCommit.Duration;
 
@@ -124,20 +127,11 @@ namespace GitJournal
 
                         TextBlock TextBlock_Title = new TextBlock();
                         TextBlock_Title.TextWrapping = TextWrapping.Wrap;  // Enable text wrapping for Title
+                        TextBlock_Title.Text = SingleCommit.Title;
 
                         TextBlock TextBlock_Content = new TextBlock();
                         TextBlock_Content.TextWrapping = TextWrapping.Wrap;  // Enable text wrapping for Content
                         TextBlock_Content.Text = SingleCommit.Content;  // Set Content content
-
-                        // Set the Label content conditionally based on the title
-                        if (SingleCommit.Title.Contains(")"))
-                        {
-                            TextBlock_Title.Text = Regex.Match(SingleCommit.Title, @":\s*(.*)").Groups[1].Value;
-                        }
-                        else
-                        {
-                            TextBlock_Title.Text = SingleCommit.Title;
-                        }
 
                         // Create the labels for Title, Content, User, Status, and Duration
                         Label Label_Title = new Label() { Content = TextBlock_Title, HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764")) };
@@ -196,52 +190,71 @@ namespace GitJournal
                         */
 
                         var stackPanel_Title = new Grid();
-
-                        var textBox = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
-
+                        var textBox_title = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
                         stackPanel_Title.Children.Add(Label_Title);
-                        stackPanel_Title.Children.Add(textBox);
-
+                        stackPanel_Title.Children.Add(textBox_title);
                         stackPanel_Title.MouseUp += StackPanel_JDT_MouseUp;
+
+
+                        var stackPanel_Content = new Grid();
+                        var textBox_content = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
+                        stackPanel_Content.Children.Add(Label_Content);
+                        stackPanel_Content.Children.Add(textBox_content);
+                        stackPanel_Content.MouseUp += StackPanel_JDT_MouseUp;
+
+
+                        var stackPanel_Status = new Grid();
+                        var textBox_status = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
+                        stackPanel_Status.Children.Add(Label_Status);
+                        stackPanel_Status.Children.Add(textBox_status);
+                        stackPanel_Status.MouseUp += StackPanel_JDT_MouseUp;
+
+
+                        var stackPanel_Duration = new Grid();
+                        var textBox_duration = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
+                        stackPanel_Duration.Children.Add(Label_Duration);
+                        stackPanel_Duration.Children.Add(textBox_duration);
+                        stackPanel_Duration.MouseUp += StackPanel_JDT_MouseUp;
 
                         // Set columns for each control
                         Grid.SetColumn(checkBox_select, 0);
                         Grid.SetColumn(stackPanel_Title, titleCol);
-                        Grid.SetColumn(Label_Content, contentCol);
+                        Grid.SetColumn(stackPanel_Content, contentCol);
                         if (displayUserColumn)
                             Grid.SetColumn(Label_User, userCol);
-                        Grid.SetColumn(Label_Status, statusCol);
-                        Grid.SetColumn(Label_Duration, durationCol);
+                        Grid.SetColumn(stackPanel_Status, statusCol);
+                        Grid.SetColumn(stackPanel_Duration, durationCol);
                         Grid.SetColumn(image, imageCol);
 
                         // Add controls to the grid
                         Grid_Entry.Children.Add(checkBox_select);
                         Grid_Entry.Children.Add(stackPanel_Title);
-                        Grid_Entry.Children.Add(Label_Content);
+                        Grid_Entry.Children.Add(stackPanel_Content);
                         if (displayUserColumn)
                             Grid_Entry.Children.Add(Label_User);
-                        Grid_Entry.Children.Add(Label_Status);
-                        Grid_Entry.Children.Add(Label_Duration);
+                        Grid_Entry.Children.Add(stackPanel_Status);
+                        Grid_Entry.Children.Add(stackPanel_Duration);
                         Grid_Entry.Children.Add(image);
 
                         // Create the border and add the grid
                         StackPanel_Entry_Border.Child = Grid_Entry;
 
 
-                        // Debug.WriteLine((((Grid_Entry.Children[1] as StackPanel).Children[0] as Label).Content as TextBlock).Text.Length);
+                        // Debug.WriteLine((Grid_Entry.Children[statusCol] as Grid).Children[0].GetType()); //  as Label).Content.ToString().Length
 
-                        if ((((Grid_Entry.Children[1] as Grid).Children[0] as Label).Content as TextBlock).Text.Length > 0)
+                        if (((Grid_Entry.Children[statusCol] as Grid).Children[0] as Label).Content.ToString().Length > 0 ||
+                            ((Grid_Entry.Children[titleCol] as Grid).Children[0] as Label).Content.ToString().Length > 0 ||
+                            ((Grid_Entry.Children[contentCol] as Grid).Children[0] as Label).Content.ToString().Length > 0)
                         {
                             // Add the StackPanel with Border to the main container
                             StackPanel_CommitDay.Children.Add(StackPanel_Entry_Border);
                         }
-
-
                     }
                     else
                     {
-                        StackPanel_CommitDay.Children.Clear();
+                        // StackPanel_CommitDay.Children.Clear();
                     }
+                    Debug.WriteLine("...........................");
                 }
                 Label totalHour = new Label();
                 totalHour.Content = dayTotal;
@@ -263,7 +276,8 @@ namespace GitJournal
                 {
                     _controller._TitleBar.DisplayHeader(true);
                 }
-                StackPanel_Main.Children.Add(StackPanel_CommitDay);
+                if(StackPanel_CommitDay.Children.Count > 2)
+                    StackPanel_Main.Children.Add(StackPanel_CommitDay);
             }
             _controller._TotalBar.updateTotal(TotalDuration);
         }
@@ -281,7 +295,7 @@ namespace GitJournal
         private void StackPanel_JDT_MouseUp(object sender, MouseEventArgs e)
         {
             ToggleGridElementVisibility(_GirdModified);
-            
+
             if ((sender as Grid).Children[0].Visibility == Visibility.Visible)
             {
                 if (((sender as Grid).Children[0] as Label).Content is TextBlock)
@@ -291,7 +305,7 @@ namespace GitJournal
                     ((sender as Grid).Children[1] as TextBox).Text = ((sender as Grid).Children[0] as Label).Content.ToString();
 
             }
-            
+
             ToggleGridElementVisibility((sender as Grid));
             _GirdModified = (sender as Grid);
         }

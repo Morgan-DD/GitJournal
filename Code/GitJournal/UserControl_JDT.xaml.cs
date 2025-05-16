@@ -19,6 +19,7 @@ using Microsoft.Web.WebView2;
 using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Web.WebView2.Core;
 using System.IO;
+// using System.Windows.Forms;
 
 namespace GitJournal
 {
@@ -28,6 +29,8 @@ namespace GitJournal
     public partial class UserControl_JDT : UserControl
     {
         Controller _controller;
+
+        Grid _GirdModified;
         public UserControl_JDT(Controller controller)
         {
             InitializeComponent();
@@ -36,7 +39,7 @@ namespace GitJournal
 
         public async void displayJDT(List<string> UsersToDisplay)
         {
-            if(_controller._isFromGitHub)
+            if (_controller._isFromGitHub)
                 _controller._ActualGitJPath = System.IO.Path.Combine(_controller._GitJFileDir, $"{_controller._RepoSelected.Replace("/", "@")}.gitj");
 
 
@@ -48,7 +51,7 @@ namespace GitJournal
             TimeSpan TotalDuration = new TimeSpan(0, 0, 0, 0);
             foreach (Commit_Info[] commitGroupByDay in _controller._JDTmanager.SplitCommitsByDay())
             {
-                TimeSpan dayTotal = new TimeSpan(0,0,0, 0);
+                TimeSpan dayTotal = new TimeSpan(0, 0, 0, 0);
                 StackPanel StackPanel_CommitDay = new StackPanel();
                 StackPanel StackPanel_Date = new StackPanel();
 
@@ -191,9 +194,19 @@ namespace GitJournal
                             Debug.WriteLine($"WebView2 Initialization Error: {ex.Message}");
                         }
                         */
+
+                        var stackPanel_Title = new Grid();
+
+                        var textBox = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
+
+                        stackPanel_Title.Children.Add(Label_Title);
+                        stackPanel_Title.Children.Add(textBox);
+
+                        stackPanel_Title.MouseUp += StackPanel_JDT_MouseUp;
+
                         // Set columns for each control
                         Grid.SetColumn(checkBox_select, 0);
-                        Grid.SetColumn(Label_Title, titleCol);
+                        Grid.SetColumn(stackPanel_Title, titleCol);
                         Grid.SetColumn(Label_Content, contentCol);
                         if (displayUserColumn)
                             Grid.SetColumn(Label_User, userCol);
@@ -203,7 +216,7 @@ namespace GitJournal
 
                         // Add controls to the grid
                         Grid_Entry.Children.Add(checkBox_select);
-                        Grid_Entry.Children.Add(Label_Title);
+                        Grid_Entry.Children.Add(stackPanel_Title);
                         Grid_Entry.Children.Add(Label_Content);
                         if (displayUserColumn)
                             Grid_Entry.Children.Add(Label_User);
@@ -211,16 +224,19 @@ namespace GitJournal
                         Grid_Entry.Children.Add(Label_Duration);
                         Grid_Entry.Children.Add(image);
 
-
                         // Create the border and add the grid
                         StackPanel_Entry_Border.Child = Grid_Entry;
 
-                        // Debug.WriteLine(((Grid_Entry.Children[1] as Label).Content as TextBlock).Text.Length > 0);
-                        if (((Grid_Entry.Children[1] as Label).Content as TextBlock).Text.Length > 0)
+
+                        // Debug.WriteLine((((Grid_Entry.Children[1] as StackPanel).Children[0] as Label).Content as TextBlock).Text.Length);
+
+                        if ((((Grid_Entry.Children[1] as Grid).Children[0] as Label).Content as TextBlock).Text.Length > 0)
                         {
                             // Add the StackPanel with Border to the main container
                             StackPanel_CommitDay.Children.Add(StackPanel_Entry_Border);
                         }
+
+
                     }
                     else
                     {
@@ -229,13 +245,13 @@ namespace GitJournal
                 }
                 Label totalHour = new Label();
                 totalHour.Content = dayTotal;
-                totalHour.Margin = new Thickness(16,0,20,0);
+                totalHour.Margin = new Thickness(16, 0, 20, 0);
                 totalHour.Foreground = Brushes.White;
                 totalHour.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764"));
                 totalHour.HorizontalContentAlignment = HorizontalAlignment.Right;
                 totalHour.BorderThickness = new Thickness(0, 0, 0, 1);
 
-                StackPanel_CommitDay.Children.Add (totalHour);
+                StackPanel_CommitDay.Children.Add(totalHour);
 
                 dayTotal = new TimeSpan(0, 0, 0, 0);
 
@@ -260,6 +276,42 @@ namespace GitJournal
                 UseShellExecute = true
             };
             Process.Start(psi);
+        }
+
+        private void StackPanel_JDT_MouseUp(object sender, MouseEventArgs e)
+        {
+            ToggleGridElementVisibility(_GirdModified);
+            
+            if ((sender as Grid).Children[0].Visibility == Visibility.Visible)
+            {
+                if (((sender as Grid).Children[0] as Label).Content is TextBlock)
+
+                    ((sender as Grid).Children[1] as TextBox).Text = (((sender as Grid).Children[0] as Label).Content as TextBlock).Text.ToString();
+                else
+                    ((sender as Grid).Children[1] as TextBox).Text = ((sender as Grid).Children[0] as Label).Content.ToString();
+
+            }
+            
+            ToggleGridElementVisibility((sender as Grid));
+            _GirdModified = (sender as Grid);
+        }
+
+        private void ToggleGridElementVisibility(Grid GridToModify)
+        {
+            if (GridToModify != null)
+            {
+                Debug.WriteLine("Toggle Grid Visibility !!");
+                if (GridToModify.Children[0].Visibility == Visibility.Visible)
+                {
+                    GridToModify.Children[0].Visibility = Visibility.Collapsed;
+                    GridToModify.Children[1].Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    GridToModify.Children[0].Visibility = Visibility.Visible;
+                    GridToModify.Children[1].Visibility = Visibility.Collapsed;
+                }
+            }
         }
     }
 }

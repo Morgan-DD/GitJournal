@@ -38,6 +38,7 @@ namespace GitJournal
                 Origin = origin,
                 IsTitleModifed = IsTitlemodifed,
                 IsContentModifed = false,
+                IsUserModified = false,
                 IsStatusModifed = false,
                 IsTDurationModifed = false
             };
@@ -165,6 +166,49 @@ namespace GitJournal
                 _controller._isFromGitHub = false;
                 _controller._mainWindow.displayJDT();
             }
+        }
+
+        public async Task modifyEntry(string commitId, string title = default, string content = default, string user = default, string status = default, string duration = default)
+        {
+            Debug.WriteLine("ModifyEnty");
+            int index = _commits.FindIndex(c => c.CommitId == commitId);
+
+
+            if (index != null)
+            {
+                if (title != default && title != _commits[index].Title)
+                {
+                    _commits[index].Title = title;
+                    _commits[index].IsTitleModifed = true;
+                }
+
+                if (content != default && content != _commits[index].Content)
+                {
+                    _commits[index].Content = content;
+                    _commits[index].IsContentModifed = true;
+                }
+
+                if (user != default && user != _commits[index].User)
+                {
+                    _commits[index].User = user;
+                    _commits[index].IsUserModified = true;
+                }
+
+                if (status != default && status != _commits[index].Status)
+                {
+                    _commits[index].Status = status;
+                    _commits[index].IsStatusModifed = true;
+                }
+
+                if (duration != default && TimeSpan.TryParse(duration, out TimeSpan parsedDuration) && parsedDuration != _commits[index].Duration)
+                {
+                    _commits[index].Duration = parsedDuration;
+                    _commits[index].IsTDurationModifed = true;
+                }
+                exportToGitJ();
+            }
+
+            await Task.CompletedTask;
         }
 
     }

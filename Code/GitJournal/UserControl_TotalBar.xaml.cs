@@ -28,7 +28,12 @@ namespace GitJournal
 
         public void updateTotal(TimeSpan newTotal)
         {
-            Label_TotalHours.Content = $"{(int)newTotal.TotalHours}:{newTotal.Minutes:D2}:{newTotal.Seconds:D2}";
+            if(newTotal.TotalHours > 0 && newTotal.Minutes > 0)
+                Label_TotalHours.Content = $"{(int)newTotal.TotalHours}h {newTotal.Minutes:D2}min";
+            else if (newTotal.TotalHours > 0)
+                Label_TotalHours.Content = $"{(int)newTotal.TotalHours}h";
+            else
+                Label_TotalHours.Content = $"{newTotal.Minutes:D2}min";
         }
     }
 }

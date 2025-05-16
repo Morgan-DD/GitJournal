@@ -138,7 +138,7 @@ namespace GitJournal
                         Label Label_Content = new Label() { Content = TextBlock_Content, HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764")), BorderThickness = new Thickness(1, 0, 0, 0) };
                         Label Label_User = new Label() { Content = SingleCommit.User, HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764")), BorderThickness = new Thickness(1, 0, 0, 0) };
                         Label Label_Status = new Label() { Content = SingleCommit.Status, HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764")), BorderThickness = new Thickness(1, 0, 0, 0) };
-                        Label Label_Duration = new Label() { Content = SingleCommit.Duration, HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764")), BorderThickness = new Thickness(1, 0, 0, 0) };
+                        Label Label_Duration = new Label() { Content = SingleCommit.Duration.ToString(@"hh\:mm"), HorizontalContentAlignment = HorizontalAlignment.Left, Foreground = Brushes.White, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764")), BorderThickness = new Thickness(1, 0, 0, 0) };
 
                         if (SingleCommit.IsTitleModifed)
                             Label_Title.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#C4BA7E"));
@@ -190,28 +190,40 @@ namespace GitJournal
                         */
 
                         var stackPanel_Title = new Grid();
-                        var textBox_title = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
+                        stackPanel_Title.Tag = SingleCommit.CommitId;
+                        var textBox_title = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 0, 3), Tag = "1" };
                         stackPanel_Title.Children.Add(Label_Title);
                         stackPanel_Title.Children.Add(textBox_title);
                         stackPanel_Title.MouseUp += StackPanel_JDT_MouseUp;
 
 
                         var stackPanel_Content = new Grid();
-                        var textBox_content = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
+                        stackPanel_Content.Tag = SingleCommit.CommitId;
+                        var textBox_content = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 1, 3), Tag = "2" };
                         stackPanel_Content.Children.Add(Label_Content);
                         stackPanel_Content.Children.Add(textBox_content);
                         stackPanel_Content.MouseUp += StackPanel_JDT_MouseUp;
 
 
                         var stackPanel_Status = new Grid();
-                        var textBox_status = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
+                        stackPanel_Status.Tag = SingleCommit.CommitId;
+                        var textBox_status = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 1, 3), Tag = "3" };
                         stackPanel_Status.Children.Add(Label_Status);
                         stackPanel_Status.Children.Add(textBox_status);
                         stackPanel_Status.MouseUp += StackPanel_JDT_MouseUp;
 
 
+                        var stackPanel_User = new Grid();
+                        stackPanel_User.Tag = SingleCommit.CommitId;
+                        var textBox_user = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 1, 3), Tag = "4" };
+                        stackPanel_User.Children.Add(Label_User);
+                        stackPanel_User.Children.Add(textBox_user);
+                        stackPanel_User.MouseUp += StackPanel_JDT_MouseUp;
+
+
                         var stackPanel_Duration = new Grid();
-                        var textBox_duration = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = Brushes.Red, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true };
+                        stackPanel_Duration.Tag = SingleCommit.CommitId;
+                        var textBox_duration = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 1, 3), Tag = "5" };
                         stackPanel_Duration.Children.Add(Label_Duration);
                         stackPanel_Duration.Children.Add(textBox_duration);
                         stackPanel_Duration.MouseUp += StackPanel_JDT_MouseUp;
@@ -221,7 +233,7 @@ namespace GitJournal
                         Grid.SetColumn(stackPanel_Title, titleCol);
                         Grid.SetColumn(stackPanel_Content, contentCol);
                         if (displayUserColumn)
-                            Grid.SetColumn(Label_User, userCol);
+                            Grid.SetColumn(stackPanel_User, userCol);
                         Grid.SetColumn(stackPanel_Status, statusCol);
                         Grid.SetColumn(stackPanel_Duration, durationCol);
                         Grid.SetColumn(image, imageCol);
@@ -231,7 +243,7 @@ namespace GitJournal
                         Grid_Entry.Children.Add(stackPanel_Title);
                         Grid_Entry.Children.Add(stackPanel_Content);
                         if (displayUserColumn)
-                            Grid_Entry.Children.Add(Label_User);
+                            Grid_Entry.Children.Add(stackPanel_User);
                         Grid_Entry.Children.Add(stackPanel_Status);
                         Grid_Entry.Children.Add(stackPanel_Duration);
                         Grid_Entry.Children.Add(image);
@@ -257,10 +269,10 @@ namespace GitJournal
                     Debug.WriteLine("...........................");
                 }
                 Label totalHour = new Label();
-                totalHour.Content = dayTotal;
+                totalHour.Content = dayTotal.ToString(@"hh\:mm");
                 totalHour.Margin = new Thickness(16, 0, 20, 0);
                 totalHour.Foreground = Brushes.White;
-                totalHour.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764"));
+                totalHour.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687"));
                 totalHour.HorizontalContentAlignment = HorizontalAlignment.Right;
                 totalHour.BorderThickness = new Thickness(0, 0, 0, 1);
 
@@ -276,7 +288,7 @@ namespace GitJournal
                 {
                     _controller._TitleBar.DisplayHeader(true);
                 }
-                if(StackPanel_CommitDay.Children.Count > 2)
+                if (StackPanel_CommitDay.Children.Count > 2)
                     StackPanel_Main.Children.Add(StackPanel_CommitDay);
             }
             _controller._TotalBar.updateTotal(TotalDuration);
@@ -298,14 +310,16 @@ namespace GitJournal
 
             if ((sender as Grid).Children[0].Visibility == Visibility.Visible)
             {
-                if (((sender as Grid).Children[0] as Label).Content is TextBlock)
+                if ((sender as Grid).Children[0] is Label)
+                {
 
-                    ((sender as Grid).Children[1] as TextBox).Text = (((sender as Grid).Children[0] as Label).Content as TextBlock).Text.ToString();
-                else
-                    ((sender as Grid).Children[1] as TextBox).Text = ((sender as Grid).Children[0] as Label).Content.ToString();
+                    if (((sender as Grid).Children[0] as Label).Content is TextBlock)
 
+                        ((sender as Grid).Children[1] as TextBox).Text = (((sender as Grid).Children[0] as Label).Content as TextBlock).Text.ToString();
+                    else
+                        ((sender as Grid).Children[1] as TextBox).Text = ((sender as Grid).Children[0] as Label).Content.ToString();
+                }
             }
-
             ToggleGridElementVisibility((sender as Grid));
             _GirdModified = (sender as Grid);
         }
@@ -314,14 +328,63 @@ namespace GitJournal
         {
             if (GridToModify != null)
             {
-                Debug.WriteLine("Toggle Grid Visibility !!");
                 if (GridToModify.Children[0].Visibility == Visibility.Visible)
                 {
                     GridToModify.Children[0].Visibility = Visibility.Collapsed;
                     GridToModify.Children[1].Visibility = Visibility.Visible;
+                    GridToModify.Children[1].Focus();
                 }
                 else
                 {
+                    Debug.WriteLine($"{(GridToModify.Children[1] as TextBox).Text.ToString()} == {(GridToModify.Children[0] as Label).Content.ToString()}");
+                    switch ((GridToModify.Children[1] as TextBox).Tag)
+                    {
+                        case "1":
+                            if ((GridToModify.Children[1] as TextBox).Text.ToString() != ((GridToModify.Children[0] as Label).Content as TextBlock).Text)
+                            {
+                                _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), title: (GridToModify.Children[1] as TextBox).Text.ToString());
+                                (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
+                                (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                            }
+                            break;
+
+                        case "2":
+                            if ((GridToModify.Children[1] as TextBox).Text.ToString() != ((GridToModify.Children[0] as Label).Content as TextBlock).Text)
+                            {
+                                _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), content: (GridToModify.Children[1] as TextBox).Text.ToString());
+                                (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
+                                (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                            }
+                            break;
+
+                        case "3":
+                            if ((GridToModify.Children[1] as TextBox).Text.ToString() != (GridToModify.Children[0] as Label).Content)
+                            {
+                                _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), user: (GridToModify.Children[1] as TextBox).Text.ToString());
+                                (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
+                                (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                            }
+                            break;
+
+                        case "4":
+                            if ((GridToModify.Children[1] as TextBox).Text.ToString() != (GridToModify.Children[0] as Label).Content)
+                            {
+                                _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), status: (GridToModify.Children[1] as TextBox).Text.ToString());
+                                (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
+                                (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                            }
+                            break;
+
+                        case "5":
+                            if ((GridToModify.Children[1] as TextBox).Text.ToString() != (GridToModify.Children[0] as Label).Content)
+                            {
+                                _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), duration: (GridToModify.Children[1] as TextBox).Text);
+                                (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
+                                (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                            }
+                            break;
+                    }
+
                     GridToModify.Children[0].Visibility = Visibility.Visible;
                     GridToModify.Children[1].Visibility = Visibility.Collapsed;
                 }

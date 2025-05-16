@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Media.Imaging;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace GitJournal
 {
@@ -36,6 +39,8 @@ namespace GitJournal
 
         public bool _isFromGitHub = false;
         public string _ActualGitJPath = "";
+        public SolidColorBrush _Yellow { get; set; } = (SolidColorBrush)(new BrushConverter().ConvertFrom("#C4BA7E"));
+        public SolidColorBrush _Green { get; set; } = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764"));
 
         public Controller(MainWindow mainWindow)
         {

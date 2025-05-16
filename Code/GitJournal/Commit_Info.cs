@@ -21,6 +21,7 @@ namespace GitJournal
 
         public bool IsTitleModifed { get; set; }
         public bool IsContentModifed { get; set; }
+        public bool IsUserModified { get; set; }
         public bool IsStatusModifed { get; set; }
         public bool IsTDurationModifed { get; set; }
     }

@@ -136,6 +136,7 @@ namespace GitJournal
 
         public async Task<bool> getAllCommits(string repoName)
         {
+            _controller._JDTmanager._commits.Clear();
             _controller._JDTmanager.importFromGitJ();
 
             string regexForHourStatus = @"\[(.*?)\]";

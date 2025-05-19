@@ -30,55 +30,20 @@ namespace GitJournal
             _controller = controller;
         }
 
-        public void SetUpForDisplay(bool title = false, bool text = false, bool user = false, bool status = false, bool Duration = false, bool Date = false)
+        public void SetUpForDisplay(bool title = false, bool text = false, bool user = false, bool status = false, bool duration = false, bool date = false)
         {
-            if (!title)
-                StackPanel_Title.Visibility = Visibility.Collapsed;
-            else
+            // If all parameters are false, set everything to visible
+            if (!title && !text && !user && !status && !duration && !date)
             {
-                StackPanel_Title.Visibility = Visibility.Visible;
-
+                title = text = user = status = duration = date = true;
             }
 
-            if (!text)
-                StackPanel_Text.Visibility = Visibility.Collapsed;
-            else
-            {
-                StackPanel_Text.Visibility = Visibility.Visible;
-
-            }
-
-            if (!user)
-                StackPanel_User.Visibility = Visibility.Collapsed;
-            else
-            {
-                StackPanel_User.Visibility = Visibility.Visible;
-
-            }
-
-            if (!status)
-                StackPanel_Status.Visibility = Visibility.Collapsed;
-            else
-            {
-                StackPanel_Status.Visibility = Visibility.Visible;
-
-            }
-
-            if (!Duration)
-                StackPanel_Duration.Visibility = Visibility.Collapsed;
-            else
-            {
-                StackPanel_Duration.Visibility = Visibility.Visible;
-
-            }
-
-            if (!Date)
-                StackPanel_Date.Visibility = Visibility.Collapsed;
-            else
-            {
-                StackPanel_Date.Visibility = Visibility.Visible;
-
-            }
+            StackPanel_Title.Visibility = title ? Visibility.Visible : Visibility.Collapsed;
+            StackPanel_Text.Visibility = text ? Visibility.Visible : Visibility.Collapsed;
+            StackPanel_User.Visibility = user ? Visibility.Visible : Visibility.Collapsed;
+            StackPanel_Status.Visibility = status ? Visibility.Visible : Visibility.Collapsed;
+            StackPanel_Duration.Visibility = duration ? Visibility.Visible : Visibility.Collapsed;
+            StackPanel_Date.Visibility = date ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void UpgateTextBoxContent(string? title, string? text, string? user, string? status, TimeSpan? Duration, DateTime? Date)
@@ -128,22 +93,35 @@ namespace GitJournal
             string status = null;
 
             if (RadioButton_Done.IsChecked == true)
+            {
                 status = "Done";
+                RadioButton_Done.IsChecked = false;
+            }
             else if (RadioButton_WIP.IsChecked == true)
+            {
                 status = "WIP";
+                RadioButton_WIP.IsChecked = false;
+            }
 
+            // Debug.WriteLine($"{_commitsIds}\n{TextBox_Title.Text}\n{TextBox_Content.Text}\n{TextBox_User.Text}\n{status}\n{TextBox_Duration.Text}\n{TextBox_Date.SelectedDate.Value}\n{true}\n");
 
             _controller.returnValueFromPopup(
-                commitIds: _commitsIds, 
-                title: TextBox_Title.Text, 
-                content: TextBox_Content.Text, 
-                user: TextBox_User.Text, 
-                status: status, 
-                duration: TextBox_Duration.Text,
-                date: TextBox_Date.SelectedDate.Value, 
-                existingStatus:true
-                );
-            
+                commitIds: _commitsIds,
+                title: string.IsNullOrWhiteSpace(TextBox_Title.Text) ? "" : TextBox_Title.Text,
+                content: string.IsNullOrWhiteSpace(TextBox_Content.Text) ? "" : TextBox_Content.Text,
+                user: string.IsNullOrWhiteSpace(TextBox_User.Text) ? "" : TextBox_User.Text,
+                status: string.IsNullOrWhiteSpace(status) ? "" : status,
+                duration: string.IsNullOrWhiteSpace(TextBox_Duration.Text) ? "" : TextBox_Duration.Text,
+                date: TextBox_Date.SelectedDate.HasValue ? TextBox_Date.SelectedDate.Value : null,
+                existingStatus: true
+            );
+
+            TextBox_Title.Text = "";
+            TextBox_Content.Text = "";
+            TextBox_User.Text = "";
+            TextBox_Title.Text = "";
+            TextBox_Duration.Text = "";
+            TextBox_Date.Text = "";
         }
     }
 }

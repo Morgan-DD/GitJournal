@@ -47,6 +47,9 @@ namespace GitJournal
         public SolidColorBrush _Yellow { get; set; } = (SolidColorBrush)(new BrushConverter().ConvertFrom("#C4BA7E"));
         public SolidColorBrush _Green { get; set; } = (SolidColorBrush)(new BrushConverter().ConvertFrom("#638764"));
 
+        public string _TokenBase { get; set; } = "Created_Token";
+        public int _LastTokenId { get; set; } = 0;
+
         public Controller(MainWindow mainWindow)
         {
             _mainWindow = mainWindow;
@@ -119,12 +122,22 @@ namespace GitJournal
 
         public void changeEntryDate()
         {
-            _InfosPopup.SetUpForDisplay(Date: true);
+            _InfosPopup.SetUpForDisplay(date: true);
             _Window_Popup.ChangeContent(_InfosPopup);
             _Window_Popup.Visibility = Visibility.Visible;
 
             _InfosPopup._commitsIds = _JDT.getSelectedEntry();
             _mainWindow.IsEnabled = false;
+        }
+
+        public void addNewEntry()
+        {
+            _InfosPopup.SetUpForDisplay(); 
+            _Window_Popup.ChangeContent(_InfosPopup);
+            _Window_Popup.Visibility = Visibility.Visible;
+
+            _mainWindow.IsEnabled = false;
+            _InfosPopup._commitsIds = null;
         }
 
         public async Task returnValueFromPopup(
@@ -168,9 +181,37 @@ namespace GitJournal
 
                 await Task.WhenAll(tasks);
             }
+            else if (date != null && duration != null && TimeSpan.TryParse(duration, out TimeSpan parsedDuration))
+            {
+                _JDTmanager.addNewEntry(
+                    createToken(),
+                    title,
+                    content,
+                    user,
+                    status,
+                    parsedDuration,           
+                    true,
+                    date.Value,                  
+                    "",
+                    "GitJ",
+                    true);
+            }
 
+            _JDTmanager.exportToGitJ();
+            /*
+            foreach(Commit_Info commit in _JDTmanager._commits)
+            {
+                Debug.WriteLine($"{commit.CommitId}");
+            }
+            */
             _mainWindow.displayJDT();
             _mainWindow.IsEnabled = true;
+        }
+
+        public string createToken()
+        {
+            _LastTokenId++;
+            return $"{_TokenBase}-{_LastTokenId}";
         }
     }
 }

@@ -267,5 +267,10 @@ namespace GitJournal
         {
             _controller.changeEntryDate();
         }
+
+        private void Button_Add_Click(object sender, RoutedEventArgs e)
+        {
+            _controller.addNewEntry();
+        }
     }
 }

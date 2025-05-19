@@ -22,7 +22,14 @@ namespace GitJournal
 
         public void addNewEntry(string CommitId, string title, string content, string user, string status, TimeSpan Duration, bool ExistingStatus, DateTime Date, string url, string origin, bool IsTitlemodifed)
         {
+            bool defaultValueForColunm = false;
             var existing = _commits.FirstOrDefault(c => c.CommitId == CommitId);
+
+            if (CommitId.Contains(_controller._TokenBase))
+            {
+                _controller._LastTokenId = Convert.ToInt32(CommitId.Split('-')[1]);
+                defaultValueForColunm = true;
+            }
 
             var newCommit = new Commit_Info
             {
@@ -37,10 +44,10 @@ namespace GitJournal
                 Url = url,
                 Origin = origin,
                 IsTitleModifed = IsTitlemodifed,
-                IsContentModifed = false,
-                IsUserModified = false,
-                IsStatusModifed = false,
-                IsTDurationModifed = false
+                IsContentModifed = defaultValueForColunm,
+                IsUserModified = defaultValueForColunm,
+                IsStatusModifed = defaultValueForColunm,
+                IsTDurationModifed = defaultValueForColunm
             };
 
             if (existing != null)
@@ -60,7 +67,9 @@ namespace GitJournal
                 }
             }
 
+            Debug.WriteLine($" add new entry : {newCommit.CommitId}");
             _commits.Add(newCommit);
+            sortByDate();
         }
 
 

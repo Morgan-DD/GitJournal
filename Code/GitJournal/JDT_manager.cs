@@ -132,6 +132,8 @@ namespace GitJournal
                 else
                     File.WriteAllText(Path.Combine(fullPath, "GitJournalExport.gitj"), jsonString);
             }
+
+            Debug.WriteLine($"Saving to : {_controller._ActualGitJPath}");
         }
         
         public bool checkIfGitJExist()

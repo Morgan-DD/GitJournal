@@ -19,6 +19,7 @@ using Microsoft.Web.WebView2;
 using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Web.WebView2.Core;
 using System.IO;
+using System.Printing;
 // using System.Windows.Forms;
 
 namespace GitJournal
@@ -74,11 +75,9 @@ namespace GitJournal
 
                 foreach (Commit_Info SingleCommit in commitGroupByDay)
                 {
-                    Debug.WriteLine($"title:{SingleCommit.Title}");
 
-                    if (UsersToDisplay.Contains(SingleCommit.User) || !_controller._isFromGitHub)
+                    if ((UsersToDisplay.Contains(SingleCommit.User) || !_controller._isFromGitHub) && SingleCommit.ExistingStatus)
                     {
-                        Debug.WriteLine("in!");
                         dayTotal += SingleCommit.Duration;
                         TotalDuration += SingleCommit.Duration;
 
@@ -117,6 +116,7 @@ namespace GitJournal
                         // Create the controls
                         CheckBox checkBox_select = new CheckBox();
                         checkBox_select.VerticalAlignment = VerticalAlignment.Center;
+                        checkBox_select.Tag = SingleCommit.CommitId;
 
                         Image image = new Image();
                         image.Source = new BitmapImage(new Uri("pack://application:,,,/Ressources/redirect.png"));
@@ -192,6 +192,7 @@ namespace GitJournal
                         var stackPanel_Title = new Grid();
                         stackPanel_Title.Tag = SingleCommit.CommitId;
                         var textBox_title = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 0, 3), Tag = "1" };
+                        textBox_title.KeyDown += InputBox_KeyDown;
                         stackPanel_Title.Children.Add(Label_Title);
                         stackPanel_Title.Children.Add(textBox_title);
                         stackPanel_Title.MouseUp += StackPanel_JDT_MouseUp;
@@ -199,7 +200,8 @@ namespace GitJournal
 
                         var stackPanel_Content = new Grid();
                         stackPanel_Content.Tag = SingleCommit.CommitId;
-                        var textBox_content = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 1, 3), Tag = "2" };
+                        var textBox_content = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = false, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 1, 3), Tag = "2" };
+                        textBox_content.KeyDown += InputBox_KeyDown;
                         stackPanel_Content.Children.Add(Label_Content);
                         stackPanel_Content.Children.Add(textBox_content);
                         stackPanel_Content.MouseUp += StackPanel_JDT_MouseUp;
@@ -208,6 +210,7 @@ namespace GitJournal
                         var stackPanel_Status = new Grid();
                         stackPanel_Status.Tag = SingleCommit.CommitId;
                         var textBox_status = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 1, 3), Tag = "3" };
+                        textBox_status.KeyDown += InputBox_KeyDown;
                         stackPanel_Status.Children.Add(Label_Status);
                         stackPanel_Status.Children.Add(textBox_status);
                         stackPanel_Status.MouseUp += StackPanel_JDT_MouseUp;
@@ -216,6 +219,7 @@ namespace GitJournal
                         var stackPanel_User = new Grid();
                         stackPanel_User.Tag = SingleCommit.CommitId;
                         var textBox_user = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 1, 3), Tag = "4" };
+                        textBox_user.KeyDown += InputBox_KeyDown;
                         stackPanel_User.Children.Add(Label_User);
                         stackPanel_User.Children.Add(textBox_user);
                         stackPanel_User.MouseUp += StackPanel_JDT_MouseUp;
@@ -224,6 +228,7 @@ namespace GitJournal
                         var stackPanel_Duration = new Grid();
                         stackPanel_Duration.Tag = SingleCommit.CommitId;
                         var textBox_duration = new TextBox { Margin = new Thickness(2), Text = $"Column 1", Visibility = Visibility.Collapsed, Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#637687")), TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, Foreground = Brushes.White, BorderThickness = new Thickness(0), HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch, Padding = new Thickness(2, 3, 1, 3), Tag = "5" };
+                        textBox_duration.KeyDown += InputBox_KeyDown;
                         stackPanel_Duration.Children.Add(Label_Duration);
                         stackPanel_Duration.Children.Add(textBox_duration);
                         stackPanel_Duration.MouseUp += StackPanel_JDT_MouseUp;
@@ -266,7 +271,6 @@ namespace GitJournal
                     {
                         // StackPanel_CommitDay.Children.Clear();
                     }
-                    Debug.WriteLine("...........................");
                 }
                 Label totalHour = new Label();
                 totalHour.Content = dayTotal.ToString(@"hh\:mm");
@@ -324,9 +328,9 @@ namespace GitJournal
             _GirdModified = (sender as Grid);
         }
 
-        private void ToggleGridElementVisibility(Grid GridToModify)
+        private void ToggleGridElementVisibility(Grid GridToModify, bool SkipLogic = false)
         {
-            if (GridToModify != null)
+            if (GridToModify != null && !SkipLogic)
             {
                 if (GridToModify.Children[0].Visibility == Visibility.Visible)
                 {
@@ -336,24 +340,47 @@ namespace GitJournal
                 }
                 else
                 {
-                    Debug.WriteLine($"{(GridToModify.Children[1] as TextBox).Text.ToString()} == {(GridToModify.Children[0] as Label).Content.ToString()}");
                     switch ((GridToModify.Children[1] as TextBox).Tag)
                     {
                         case "1":
-                            if ((GridToModify.Children[1] as TextBox).Text.ToString() != ((GridToModify.Children[0] as Label).Content as TextBlock).Text)
+                            if ((GridToModify.Children[0] as Label).Content is TextBlock)
                             {
-                                _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), title: (GridToModify.Children[1] as TextBox).Text.ToString());
-                                (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
-                                (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                                if ((GridToModify.Children[1] as TextBox).Text.ToString() != ((GridToModify.Children[0] as Label).Content as TextBlock).Text)
+                                {
+                                    _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), title: (GridToModify.Children[1] as TextBox).Text.ToString());
+                                    (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
+                                    (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                                }
+                            }
+                            else
+                            {
+                                if ((GridToModify.Children[1] as TextBox).Text.ToString() != (GridToModify.Children[0] as Label).Content)
+                                {
+                                    _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), title: (GridToModify.Children[1] as TextBox).Text.ToString());
+                                    (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
+                                    (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                                }
                             }
                             break;
 
                         case "2":
-                            if ((GridToModify.Children[1] as TextBox).Text.ToString() != ((GridToModify.Children[0] as Label).Content as TextBlock).Text)
+                            if ((GridToModify.Children[0] as Label).Content is TextBlock)
                             {
-                                _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), content: (GridToModify.Children[1] as TextBox).Text.ToString());
-                                (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
-                                (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                                if ((GridToModify.Children[1] as TextBox).Text.ToString() != ((GridToModify.Children[0] as Label).Content as TextBlock).Text)
+                                {
+                                    _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), content: (GridToModify.Children[1] as TextBox).Text.ToString());
+                                    (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
+                                    (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                                }
+                            }
+                            else
+                            {
+                                if ((GridToModify.Children[1] as TextBox).Text.ToString() != (GridToModify.Children[0] as Label).Content)
+                                {
+                                    _controller._JDTmanager.modifyEntry(GridToModify.Tag.ToString(), content: (GridToModify.Children[1] as TextBox).Text.ToString());
+                                    (GridToModify.Children[0] as Label).Content = (GridToModify.Children[1] as TextBox).Text;
+                                    (GridToModify.Children[0] as Label).Background = _controller._Yellow;
+                                }
                             }
                             break;
 
@@ -389,6 +416,91 @@ namespace GitJournal
                     GridToModify.Children[1].Visibility = Visibility.Collapsed;
                 }
             }
+            else if (GridToModify != null)
+            {
+                if (GridToModify.Children[0].Visibility == Visibility.Visible)
+                {
+                    GridToModify.Children[0].Visibility = Visibility.Collapsed;
+                    GridToModify.Children[1].Visibility = Visibility.Visible;
+                    GridToModify.Children[1].Focus();
+                }
+                else
+                {
+                    GridToModify.Children[0].Visibility = Visibility.Visible;
+                    GridToModify.Children[1].Visibility = Visibility.Collapsed;
+                    (GridToModify.Children[1] as TextBox).Text = "";
+                }
+            }
+        }
+
+        private void InputBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+                {
+                    // Insert line break at current caret position
+                    var textBox = (TextBox)sender;
+                    int caretIndex = textBox.CaretIndex;
+                    textBox.Text = textBox.Text.Insert(caretIndex, Environment.NewLine);
+                    textBox.CaretIndex = caretIndex + Environment.NewLine.Length;
+
+                    e.Handled = true; // Prevent default behavior
+                }
+                else
+                {
+                    // Validate or submit
+                    ToggleGridElementVisibility(_GirdModified);
+                    _GirdModified = null;
+                }
+            }
+            else if (e.Key == Key.Escape)
+            {
+                ToggleGridElementVisibility(_GirdModified, true);
+                _GirdModified = null;
+            }
+        }
+
+        public void DeleteSelectedEntry()
+        {
+            foreach (int idToDelet in getSelectedEntry())
+            {
+                _controller._JDTmanager._commits[idToDelet].ExistingStatus = false;
+                Console.WriteLine($"Commit {idToDelet} set to false");
+            }
+
+            _controller._JDTmanager.exportToGitJ();
+        }
+
+        private List<int> getSelectedEntry()
+        {
+            List<int> idlist = new List<int>();
+            List<string> CommitIdsList = new List<string>();
+            int singleId = 0;
+            foreach (UIElement control in StackPanel_Main.Children)
+            {
+                if (control is StackPanel)
+                {
+                    if ((control as StackPanel).Children[1] is Border)
+                    {
+                        if (((((control as StackPanel).Children[1] as Border).Child as Grid).Children[0] as CheckBox).IsChecked == true)
+                        {
+                            CommitIdsList.Add(((((control as StackPanel).Children[1] as Border).Child as Grid).Children[0] as CheckBox).Tag.ToString());
+                        }
+                    }
+                }
+            }
+
+            foreach (string commitId in CommitIdsList)
+            {
+                idlist = _controller._JDTmanager._commits
+                    .Select((item, index) => new { item, index })
+                    .Where(x => x.item.CommitId == commitId)
+                    .Select(x => x.index)
+                    .ToList();
+            }
+
+            return idlist;
         }
     }
 }

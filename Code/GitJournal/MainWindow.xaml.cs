@@ -255,5 +255,10 @@ namespace GitJournal
         {
             _controller._JDTmanager.exportToGitJ(choosAFolder());
         }
+
+        private void Button_Delete_Click(object sender, RoutedEventArgs e)
+        {
+            _controller._JDT.DeleteSelectedEntry();
+        }
     }
 }

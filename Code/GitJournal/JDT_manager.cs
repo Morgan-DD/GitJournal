@@ -75,7 +75,7 @@ namespace GitJournal
 
         }
 
-        
+
         public List<Commit_Info[]> SplitCommitsByDay()
         {
             List<Commit_Info[]> listOfCommits = _commits
@@ -127,7 +127,7 @@ namespace GitJournal
                 File.WriteAllText(_controller._ActualGitJPath, jsonString);
             else
             {
-                if(_controller._RepoSelected != null)
+                if (_controller._RepoSelected != null)
                     File.WriteAllText(Path.Combine(fullPath, $"{_controller._RepoSelected.Replace("/", "@")}.gitj"), jsonString);
                 else
                     File.WriteAllText(Path.Combine(fullPath, "GitJournalExport.gitj"), jsonString);
@@ -135,7 +135,7 @@ namespace GitJournal
 
             Debug.WriteLine($"Saving to : {_controller._ActualGitJPath}");
         }
-        
+
         public bool checkIfGitJExist()
         {
             return File.Exists(_controller._ActualGitJPath);
@@ -170,48 +170,71 @@ namespace GitJournal
             }
         }
 
-        public async Task modifyEntry(string commitId, string title = default, string content = default, string user = default, string status = default, string duration = default)
+        public async Task modifyEntry(
+                string commitId,
+                string title = null,
+                string content = null,
+                string user = null,
+                string status = null,
+                string duration = null,
+                DateTime? date = null,
+                bool? existingStatus = null)
         {
-            Debug.WriteLine("ModifyEnty");
+            Debug.WriteLine("ModifyEntry");
             int index = _commits.FindIndex(c => c.CommitId == commitId);
 
-
-            if (index != null)
+            if (index != -1)
             {
-                if (title != default && title != _commits[index].Title)
+                if (title != null && title != _commits[index].Title)
                 {
                     _commits[index].Title = title;
                     _commits[index].IsTitleModifed = true;
                 }
 
-                if (content != default && content != _commits[index].Content)
+                if (content != null && content != _commits[index].Content)
                 {
                     _commits[index].Content = content;
                     _commits[index].IsContentModifed = true;
                 }
 
-                if (user != default && user != _commits[index].User)
+                if (user != null && user != _commits[index].User)
                 {
                     _commits[index].User = user;
                     _commits[index].IsUserModified = true;
                 }
 
-                if (status != default && status != _commits[index].Status)
+                if (status != null && status != _commits[index].Status)
                 {
                     _commits[index].Status = status;
                     _commits[index].IsStatusModifed = true;
                 }
 
-                if (duration != default && TimeSpan.TryParse(duration, out TimeSpan parsedDuration) && parsedDuration != _commits[index].Duration)
+                if (duration != null && TimeSpan.TryParse(duration, out TimeSpan parsedDuration) &&
+                    parsedDuration != _commits[index].Duration)
                 {
                     _commits[index].Duration = parsedDuration;
                     _commits[index].IsTDurationModifed = true;
                 }
+
+                if (date.HasValue)
+                {
+                    _commits[index].Date = date.Value;
+                }
+
+                if (existingStatus.HasValue)
+                {
+                    _commits[index].ExistingStatus = existingStatus.Value;
+                }
+
                 exportToGitJ();
             }
 
             await Task.CompletedTask;
         }
 
+        public void DeleteSelectedEntry()
+        {
+            _controller._JDT.DeleteSelectedEntry();
+        }
     }
 }

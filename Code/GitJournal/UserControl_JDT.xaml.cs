@@ -32,6 +32,8 @@ namespace GitJournal
         Controller _controller;
 
         Grid _GirdModified;
+
+        List<string> _UserToDisplay;
         public UserControl_JDT(Controller controller)
         {
             InitializeComponent();
@@ -43,6 +45,7 @@ namespace GitJournal
             if (_controller._isFromGitHub)
                 _controller._ActualGitJPath = System.IO.Path.Combine(_controller._GitJFileDir, $"{_controller._RepoSelected.Replace("/", "@")}.gitj");
 
+            _UserToDisplay = UsersToDisplay;
 
             bool displayUserColumn = UsersToDisplay.Count > 1;
             string baseHtml = "<html><style>html{{background-color: #638764;}}</style></html>";
@@ -75,7 +78,6 @@ namespace GitJournal
 
                 foreach (Commit_Info SingleCommit in commitGroupByDay)
                 {
-
                     if ((UsersToDisplay.Contains(SingleCommit.User) || !_controller._isFromGitHub) && SingleCommit.ExistingStatus)
                     {
                         dayTotal += SingleCommit.Duration;
@@ -463,44 +465,41 @@ namespace GitJournal
 
         public void DeleteSelectedEntry()
         {
-            foreach (int idToDelet in getSelectedEntry())
+            foreach (string idToDelet in getSelectedEntry())
             {
-                _controller._JDTmanager._commits[idToDelet].ExistingStatus = false;
-                Console.WriteLine($"Commit {idToDelet} set to false");
+                Debug.WriteLine(idToDelet);
+                _controller._JDTmanager.modifyEntry(idToDelet, existingStatus: false);
             }
 
             _controller._JDTmanager.exportToGitJ();
+            displayJDT(_UserToDisplay);
         }
 
-        private List<int> getSelectedEntry()
+        private List<string> getSelectedEntry()
         {
-            List<int> idlist = new List<int>();
-            List<string> CommitIdsList = new List<string>();
-            int singleId = 0;
-            foreach (UIElement control in StackPanel_Main.Children)
+            var checkedTags = new List<string>();
+
+            foreach (var child in StackPanel_Main.Children)
             {
-                if (control is StackPanel)
+                if (child is StackPanel commitDayPanel)
                 {
-                    if ((control as StackPanel).Children[1] is Border)
+                    foreach (var entry in commitDayPanel.Children)
                     {
-                        if (((((control as StackPanel).Children[1] as Border).Child as Grid).Children[0] as CheckBox).IsChecked == true)
+                        if (entry is Border entryBorder && entryBorder.Child is Grid entryGrid)
                         {
-                            CommitIdsList.Add(((((control as StackPanel).Children[1] as Border).Child as Grid).Children[0] as CheckBox).Tag.ToString());
+                            foreach (var element in entryGrid.Children)
+                            {
+                                if (element is CheckBox cb && cb.IsChecked == true && cb.Tag is string tag)
+                                {
+                                    checkedTags.Add(tag);
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            foreach (string commitId in CommitIdsList)
-            {
-                idlist = _controller._JDTmanager._commits
-                    .Select((item, index) => new { item, index })
-                    .Where(x => x.item.CommitId == commitId)
-                    .Select(x => x.index)
-                    .ToList();
-            }
-
-            return idlist;
+            return checkedTags;
         }
     }
 }

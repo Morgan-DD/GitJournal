@@ -10,6 +10,8 @@ using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows;
+using Newtonsoft.Json.Linq;
 
 namespace GitJournal
 {
@@ -27,6 +29,9 @@ namespace GitJournal
         public UserControl_TitleBar _TitleBar { get; set; }
         public UserControl_TotalBar _TotalBar { get; set; }
         public UserControl_JDT _JDT { get; set; }
+        public UserControl_InfosPopup _InfosPopup { get; set; }
+
+        public Window_Popup _Window_Popup { get; set; }
 
         public string _PATToken { get; set; }
         public string _ClientName { get; set; }
@@ -58,6 +63,8 @@ namespace GitJournal
             _TitleBar = new UserControl_TitleBar();
             _TotalBar = new UserControl_TotalBar();
             _JDT = new UserControl_JDT(this);
+            _InfosPopup = new UserControl_InfosPopup(this);
+            _Window_Popup = new Window_Popup();
         }
 
         public async void Login()
@@ -108,6 +115,62 @@ namespace GitJournal
         public void changeRepo()
         {
             
+        }
+
+        public void changeEntryDate()
+        {
+            _InfosPopup.SetUpForDisplay(Date: true);
+            _Window_Popup.ChangeContent(_InfosPopup);
+            _Window_Popup.Visibility = Visibility.Visible;
+
+            _InfosPopup._commitsIds = _JDT.getSelectedEntry();
+            _mainWindow.IsEnabled = false;
+        }
+
+        public async Task returnValueFromPopup(
+            List<string> commitIds = null,
+            string title = null,
+            string content = null,
+            string user = null,
+            string status = null,
+            string duration = null,
+            DateTime? date = null,
+            bool? existingStatus = null)
+        {
+            _Window_Popup.Visibility = Visibility.Hidden;
+
+            if (commitIds != null)
+            {
+                var tasks = new List<Task>();
+
+                foreach (var commitId in commitIds)
+                {
+                    string _title = title == "" ? null : title;
+                    string _content = content == "" ? null : content;
+                    string _user = user == "" ? null : user;
+                    string _status = status == "" ? null : status;
+                    string _duration = duration == "" ? null : duration;
+                    /*
+                    DateTime? _date = date == "" ? null : date;
+                    bool? _existingStatus = existingStatus == "" ? null : existingStatus;
+                    */
+
+                    tasks.Add(_JDTmanager.modifyEntry(
+                        commitId,
+                        _title,
+                        _content,
+                        _user,
+                        _status,
+                        _duration,
+                        date,
+                        existingStatus));
+                }
+
+                await Task.WhenAll(tasks);
+            }
+
+            _mainWindow.displayJDT();
+            _mainWindow.IsEnabled = true;
         }
     }
 }

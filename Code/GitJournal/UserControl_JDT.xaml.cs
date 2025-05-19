@@ -475,7 +475,7 @@ namespace GitJournal
             displayJDT(_UserToDisplay);
         }
 
-        private List<string> getSelectedEntry()
+        public List<string> getSelectedEntry()
         {
             var checkedTags = new List<string>();
 

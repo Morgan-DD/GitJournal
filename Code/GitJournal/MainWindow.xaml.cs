@@ -184,7 +184,9 @@ namespace GitJournal
 
         private void changeVisibility_Click(object sender, RoutedEventArgs e)
         {
-            _controller._JDT.displayJDT(_controller._UserList.getUsersChecked());
+            _controller._InfosPopup.SetUpForDisplay(true, true, true, true, true, true);
+            _controller._Window_Popup.ChangeContent(_controller._InfosPopup);
+            _controller._Window_Popup.Visibility = Visibility.Visible;
         }
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)
@@ -259,6 +261,11 @@ namespace GitJournal
         private void Button_Delete_Click(object sender, RoutedEventArgs e)
         {
             _controller._JDT.DeleteSelectedEntry();
+        }
+
+        private void Button_ChangeDate_Click(object sender, RoutedEventArgs e)
+        {
+            _controller.changeEntryDate();
         }
     }
 }

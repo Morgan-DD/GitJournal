@@ -184,9 +184,7 @@ namespace GitJournal
 
         private void changeVisibility_Click(object sender, RoutedEventArgs e)
         {
-            _controller._InfosPopup.SetUpForDisplay(true, true, true, true, true, true);
-            _controller._Window_Popup.ChangeContent(_controller._InfosPopup);
-            _controller._Window_Popup.Visibility = Visibility.Visible;
+           _controller._PDFmanager.createPDF("Morgan-DD", _controller._RepoSelected, true);
         }
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)

@@ -1,0 +1,271 @@
+﻿using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
+using System;
+using System.Diagnostics;
+
+namespace GitJournal
+{
+    public class PDF_manager
+    {
+        Controller _controller;
+
+        public PDF_manager(Controller controller)
+        {
+            _controller = controller;
+        }
+
+        public void createPDF(string writer, string repoName, bool displayUser)
+        {
+            string fileName = $"{repoName.Split("/")[1]}_JDT.pdf";
+            string headerText = "Journal de travail";
+
+            double marginTop = 50;
+            double marginBottom = 50;
+            double DefaultrowHeight = 25;
+            double rowHeight = DefaultrowHeight;
+            double col1Width = 200;
+            double col2Width = 400;
+            double col3Width = 75;
+            double col4Width = 50;
+            double col5Width = 50;
+            double tableWidth = col1Width + col2Width + col3Width + col4Width + col5Width;
+
+            var dates = Enumerable.Range(0, 100)
+                .Select(i => DateTime.Today.AddDays(i).ToString("yyyy-MM-dd"))
+                .ToArray();
+
+            int margin = 3;
+
+            PdfDocument document = new PdfDocument();
+            PdfPage page = document.AddPage();
+            page.Orientation = PdfSharpCore.PageOrientation.Landscape;
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+            XFont font = new XFont("Arial", 12);
+            XFont dateFont = new XFont("Arial", 20);
+            DrawHeader(gfx, page, headerText);
+            DrawFooter(gfx, page, writer, fileName);
+
+            double currentY = marginTop;
+
+            foreach (Commit_Info[] commitGroupByDay in _controller._JDTmanager.SplitCommitsByDay())
+            {
+
+                int totalRows = 1 + commitGroupByDay.Length; // header + data rows
+                double tableHeight = 0;
+                double verticalGap = 20;
+
+                // Check if the table fits on the current page; else add a new page
+                if (currentY + tableHeight + marginBottom > page.Height)
+                {
+                    // Add new page
+                    page = document.AddPage();
+                    page.Orientation = PdfSharpCore.PageOrientation.Landscape;
+                    gfx = XGraphics.FromPdfPage(page);
+                    DrawHeader(gfx, page, headerText);
+                    DrawFooter(gfx, page, writer, fileName);
+                    currentY = marginTop;
+                }
+
+                double startX = (page.Width - tableWidth) / 2;
+
+
+                // string dateText = dates[a];
+                // Then draw the date text on top
+                gfx.DrawString(commitGroupByDay[0].Date.ToString("dd MMMM yyyy"), dateFont, XBrushes.DarkSlateGray,
+                    new XRect(startX, currentY, tableWidth, rowHeight),
+                    XStringFormats.TopLeft);
+                tableHeight += rowHeight;
+                currentY += 30;
+
+                // Draw header background first
+                gfx.DrawRectangle(XBrushes.LightGray, startX, currentY, tableWidth, rowHeight);
+                tableHeight += rowHeight;
+
+                // Draw header text
+                gfx.DrawString("Titre", font, XBrushes.Black, new XRect(startX, currentY, col1Width, rowHeight), XStringFormats.CenterLeft);
+                if (displayUser)
+                {
+                    gfx.DrawString("Contenu", font, XBrushes.Black, new XRect(startX + col1Width, currentY, col2Width, rowHeight), XStringFormats.CenterLeft);
+                    gfx.DrawString("Utilisateur", font, XBrushes.Black, new XRect(startX + col1Width+col2Width, currentY, col3Width, rowHeight), XStringFormats.CenterLeft);
+                }else
+                    gfx.DrawString("Contenu", font, XBrushes.Black, new XRect(startX+col1Width, currentY, col2Width+ col3Width, rowHeight), XStringFormats.CenterLeft);
+
+                gfx.DrawString("Status", font, XBrushes.Black, new XRect(startX + col1Width+ col2Width + col3Width, currentY, col4Width, rowHeight), XStringFormats.CenterLeft);
+                gfx.DrawString("Durée", font, XBrushes.Black, new XRect(startX + col1Width + col2Width + col3Width + col5Width, currentY, col3Width, rowHeight), XStringFormats.CenterLeft);
+
+                // Draw data rows
+                int counter = 0;
+                double nextY = currentY+ rowHeight;
+                foreach (Commit_Info SingleCommit in commitGroupByDay)
+                {
+                   // double y = currentY + rowHeight * (counter + 1);
+
+                    List<int> WarpedLine = new List<int>();
+                    WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Title, font, col1Width));
+                    WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Content, font, col2Width));
+                    if (displayUser)
+                        WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.User, font, col3Width));
+                    WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Status, font, col4Width));
+                    WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Duration.ToString(@"hh\:mm"), font, col5Width));
+
+                    rowHeight = DefaultrowHeight * WarpedLine.Max();
+
+                    Debug.WriteLine($"WarpedLine.Max(): {WarpedLine.Max()}");
+
+                    gfx.DrawRectangle(XPens.Black, startX, nextY, col1Width, rowHeight);
+                    if (displayUser)
+                    {
+                        gfx.DrawRectangle(XPens.Black, startX + col1Width + col2Width, nextY, col3Width, rowHeight);
+                        gfx.DrawRectangle(XPens.Black, startX + col1Width, nextY, col2Width, rowHeight);
+                    }
+                    else
+                        gfx.DrawRectangle(XPens.Black, startX + col1Width, nextY, col2Width+col3Width, rowHeight);
+                    gfx.DrawRectangle(XPens.Black, startX + col1Width + col2Width + col3Width, nextY, col4Width, rowHeight);
+                    gfx.DrawRectangle(XPens.Black, startX + col1Width + col2Width + col3Width + col4Width, nextY, col5Width, rowHeight);
+
+
+                    DrawStringWrapped(gfx, SingleCommit.Title, font, XBrushes.Black, new XRect(startX, nextY, col1Width, rowHeight), margin);
+                    if (displayUser)
+                    {
+                        // gfx.DrawString(SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width + margin, y, col2Width, rowHeight), XStringFormats.CenterLeft);
+                        DrawStringWrapped(gfx, SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width + margin, nextY, col2Width, rowHeight), margin);
+                        gfx.DrawString(SingleCommit.User, font, XBrushes.Black, new XRect(startX + col1Width + col2Width, nextY, col3Width, rowHeight), XStringFormats.Center);
+                    }else
+                        DrawStringWrapped(gfx, SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width + margin, nextY, col2Width + col3Width, rowHeight), margin);
+                    // gfx.DrawString(SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width, y, col2Width+col3Width + margin, rowHeight), XStringFormats.CenterLeft);
+                    gfx.DrawString(SingleCommit.Status, font, XBrushes.Black, new XRect(startX + col1Width + col2Width + col3Width, nextY, col4Width, rowHeight), XStringFormats.Center);
+                    gfx.DrawString(SingleCommit.Duration.ToString(@"hh\:mm"), font, XBrushes.Black, new XRect(startX + col1Width + col2Width + col3Width + col4Width, nextY, col5Width, rowHeight), XStringFormats.Center);
+
+                    counter++;
+                    nextY += rowHeight;
+                    tableHeight += rowHeight;
+                    rowHeight = DefaultrowHeight;
+                }
+                rowHeight = DefaultrowHeight;
+                currentY += tableHeight + verticalGap;
+            }
+
+            // Save or use document here, e.g.
+
+            document.Save(_controller.GetUniqueFilePath($"C:\\Users\\pg66hua\\Desktop\\{fileName}"));
+        }
+
+        private void DrawHeader(XGraphics gfx, PdfPage page, string headerText)
+        {
+            XFont headerFont = new XFont("Arial", 14, XFontStyle.Bold);
+            gfx.DrawString(headerText, headerFont, XBrushes.Black,
+                new XRect(0, 20, page.Width, 30), XStringFormats.TopCenter);
+        }
+
+        private void DrawFooter(XGraphics gfx, PdfPage page, string writerName, string fileName)
+        {
+            XFont footerFont = new XFont("Arial", 10, XFontStyle.Regular);
+            double margin = 40;
+            double yPos = page.Height - 40;
+
+            // Left: Date
+            string dateText = DateTime.Now.ToString("dd-MM-yyyy");
+            gfx.DrawString(dateText, footerFont, XBrushes.Gray, new XPoint(margin, yPos));
+
+            // Center: Writer Name
+            gfx.DrawString(writerName, footerFont, XBrushes.Gray,
+                new XRect(0, yPos - 10, page.Width, 20), XStringFormats.BottomCenter);
+
+            // Right: File Name
+            gfx.DrawString(fileName, footerFont, XBrushes.Gray,
+                new XPoint(page.Width - margin, yPos), XStringFormats.BottomRight);
+        }
+
+        void DrawStringWrapped(XGraphics gfx, string text, XFont font, XBrush brush, XRect rect, double margin)
+        {
+            var lines = new List<string>();
+            var words = text.Split(' ');
+
+            string currentLine = "";
+            foreach (var word in words)
+            {
+                string testLine = currentLine.Length == 0 ? word : currentLine + " " + word;
+                var size = gfx.MeasureString(testLine, font);
+                if (size.Width > rect.Width - 2 * margin)
+                {
+                    if (currentLine.Length > 0)
+                    {
+                        lines.Add(currentLine);
+                        currentLine = word;
+                    }
+                    else
+                    {
+                        // Single very long word: force break
+                        lines.Add(word);
+                        currentLine = "";
+                    }
+                }
+                else
+                {
+                    currentLine = testLine;
+                }
+            }
+            if (!string.IsNullOrEmpty(currentLine))
+                lines.Add(currentLine);
+
+            double lineHeight = font.GetHeight();
+            double y = rect.Y + margin;
+            foreach (var line in lines)
+            {
+                gfx.DrawString(line, font, brush, new XRect(rect.X + margin, y, rect.Width, lineHeight), XStringFormats.TopLeft);
+                y += lineHeight;
+            }
+        }
+
+        int CountWrappedLines(XGraphics gfx, string text, XFont font, double maxWidth)
+        {
+            var words = text.Split(' ');
+            int lineCount = 1;
+            string currentLine = "";
+
+            foreach (var word in words)
+            {
+                string testLine = currentLine.Length == 0 ? word : currentLine + " " + word;
+                var size = gfx.MeasureString(testLine, font);
+
+                if (size.Width > maxWidth)
+                {
+                    // Current line is full, start new line with this word
+                    lineCount++;
+                    currentLine = word;
+
+                    // Handle extremely long single words that can't fit in one line
+                    var wordSize = gfx.MeasureString(word, font);
+                    if (wordSize.Width > maxWidth)
+                    {
+                        // Count how many lines this single word will need if broken at character level
+                        int charsPerLine = 1;
+                        // Find max chars that fit
+                        for (int i = 1; i <= word.Length; i++)
+                        {
+                            var substr = word.Substring(0, i);
+                            if (gfx.MeasureString(substr, font).Width > maxWidth)
+                            {
+                                charsPerLine = i - 1;
+                                break;
+                            }
+                        }
+                        if (charsPerLine == 0) charsPerLine = 1;
+                        int additionalLines = (int)Math.Ceiling((double)word.Length / charsPerLine) - 1;
+                        lineCount += additionalLines;
+                        currentLine = "";
+                    }
+                }
+                else
+                {
+                    currentLine = testLine;
+                }
+            }
+
+            return lineCount;
+        }
+
+
+
+    }
+}

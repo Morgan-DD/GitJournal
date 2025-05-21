@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace GitJournal
 {
@@ -23,6 +24,8 @@ namespace GitJournal
         public API_manager _APImanager { get; set; }
         public Gitj_Manager _Gitjmanager { get; set; }
         public JDT_manager _JDTmanager { get; set; }
+
+        public PDF_manager _PDFmanager { get; set; }
 
         public List_Items _RepoList { get; set; }
         public List_Items _UserList { get; set; }
@@ -59,6 +62,7 @@ namespace GitJournal
             _APImanager = new API_manager(this);
             _Gitjmanager = new Gitj_Manager(this);
             _JDTmanager = new JDT_manager(this);
+            _PDFmanager = new PDF_manager(this);
 
             // visual objects
             _RepoList = new List_Items(false, this);
@@ -219,6 +223,39 @@ namespace GitJournal
             while (_JDTmanager._commits.Any(c => c.CommitId == newId));
 
             return newId;
+        }
+
+        public string GetUniqueFilePath(string filePath)
+        {
+            if (!File.Exists(filePath))
+                return filePath;
+
+            string directory = Path.GetDirectoryName(filePath)!;
+            string filenameWithoutExt = Path.GetFileNameWithoutExtension(filePath);
+            string extension = Path.GetExtension(filePath);
+
+            int counter = 1;
+            string newFilePath;
+
+            do
+            {
+                string newFileName = $"{filenameWithoutExt}({counter}){extension}";
+                newFilePath = Path.Combine(directory, newFileName);
+                counter++;
+            }
+            while (File.Exists(newFilePath));
+
+            return newFilePath;
+        }
+
+
+        public string formatTotalHours(TimeSpan hourToFormat)
+        {
+            string formatedHours = "";
+
+
+
+            return formatedHours;
         }
     }
 }

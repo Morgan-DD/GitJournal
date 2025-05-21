@@ -140,7 +140,7 @@ namespace GitJournal
 
         private void MenuItem_Click_Export_pdf(object sender, RoutedEventArgs e)
         {
-            _controller._PDFmanager.createPDF(_controller._ClientName, _controller._RepoSelected);
+            _controller._PDFmanager.createPDF(_controller._ClientName, _controller._RepoSelected, choosAFolder());
         }
 
         public void displayUserInfo(string userName, BitmapImage userIcon)
@@ -186,7 +186,7 @@ namespace GitJournal
 
         private void changeVisibility_Click(object sender, RoutedEventArgs e)
         {
-           _controller._PDFmanager.createPDF(_controller._ClientName, _controller._RepoSelected);
+           
         }
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)

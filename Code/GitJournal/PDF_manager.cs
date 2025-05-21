@@ -14,7 +14,7 @@ namespace GitJournal
             _controller = controller;
         }
 
-        public void createPDF(string writer, string repoName)
+        public void createPDF(string writer, string repoName,string filePath)
         {
             string fileName = $"{repoName.Split("/")[1]}_JDT.pdf";
             string headerText = "Journal de travail";
@@ -189,7 +189,7 @@ namespace GitJournal
 
             // Save or use document here, e.g.
 
-            document.Save(_controller.GetUniqueFilePath($"C:\\Users\\pg66hua\\Desktop\\{fileName}"));
+            document.Save(_controller.GetUniqueFilePath($"{filePath}\\{fileName}"));
         }
 
         private void DrawHeader(XGraphics gfx, PdfPage page, string headerText)

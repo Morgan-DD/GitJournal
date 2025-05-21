@@ -97,21 +97,6 @@ namespace GitJournal
             return listOfCommits;
         }
 
-        private void test()
-        {
-            List<Commit_Info[]> dailyCommits = SplitCommitsByDay();
-
-            foreach (var dayGroup in dailyCommits)
-            {
-                Console.WriteLine($"--- Commits for {dayGroup[0].Date.Date.ToShortDateString()} ---");
-                foreach (var commit in dayGroup)
-                {
-                    Console.WriteLine($"  {commit.CommitId} by {commit.User}");
-                }
-            }
-
-        }
-
         public void exportToGitJ(string fullPath = "")
         {
             foreach (Commit_Info commit in _commits)

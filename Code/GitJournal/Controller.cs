@@ -210,8 +210,15 @@ namespace GitJournal
 
         public string createToken()
         {
-            _LastTokenId++;
-            return $"{_TokenBase}-{_LastTokenId}";
+            string newId;
+            do
+            {
+                newId = $"{_TokenBase}-{_LastTokenId}";
+                _LastTokenId++; // Increment after generating
+            }
+            while (_JDTmanager._commits.Any(c => c.CommitId == newId));
+
+            return newId;
         }
     }
 }

@@ -79,10 +79,9 @@ namespace GitJournal
                 foreach (Commit_Info SingleCommit in commitGroupByDay)
                 {
 
-                    Debug.WriteLine($"-------------------------------------\n{SingleCommit.CommitId}\n{SingleCommit.User}\n{!_controller._isFromGitHub}\n{SingleCommit.ExistingStatus}");
+                    // Debug.WriteLine($"-------------------------------------\n{SingleCommit.CommitId}\n{SingleCommit.User}\n{!_controller._isFromGitHub}\n{SingleCommit.ExistingStatus}");
                     if ((UsersToDisplay.Contains(SingleCommit.User) || !_controller._isFromGitHub) && SingleCommit.ExistingStatus)
                     {
-                        Debug.WriteLine($"{SingleCommit.CommitId} \n\n");
                         dayTotal += SingleCommit.Duration;
                         TotalDuration += SingleCommit.Duration;
 

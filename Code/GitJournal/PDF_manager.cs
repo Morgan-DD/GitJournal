@@ -14,7 +14,7 @@ namespace GitJournal
             _controller = controller;
         }
 
-        public void createPDF(string writer, string repoName, bool displayUser)
+        public void createPDF(string writer, string repoName)
         {
             string fileName = $"{repoName.Split("/")[1]}_JDT.pdf";
             string headerText = "Journal de travail";
@@ -36,6 +36,8 @@ namespace GitJournal
 
             int margin = 3;
 
+            bool displayUser = _controller._JDT._UserToDisplay.Count > 1;
+
             PdfDocument document = new PdfDocument();
             PdfPage page = document.AddPage();
             page.Orientation = PdfSharpCore.PageOrientation.Landscape;
@@ -46,10 +48,10 @@ namespace GitJournal
             DrawFooter(gfx, page, writer, fileName);
 
             double currentY = marginTop;
+            bool displayDay = false;
 
             foreach (Commit_Info[] commitGroupByDay in _controller._JDTmanager.SplitCommitsByDay())
             {
-
                 int totalRows = 1 + commitGroupByDay.Length; // header + data rows
                 double tableHeight = 0;
                 double verticalGap = 20;
@@ -103,76 +105,82 @@ namespace GitJournal
                 // Debug.WriteLine($"\ncurrentY : {currentY}\rowHeight : {rowHeight}\nextY : {nextY}");
                 foreach (Commit_Info SingleCommit in commitGroupByDay)
                 {
-                    // double y = currentY + rowHeight * (counter + 1);
-                    List<int> WarpedLine = new List<int>();
-                    WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Title, font, col1Width));
-                    WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Content, font, col2Width));
-                    if (displayUser)
-                        WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.User, font, col3Width));
-                    WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Status, font, col4Width));
-                    WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Duration.ToString(@"hh\:mm"), font, col5Width));
-
-                    Debug.WriteLine($"---------------------{SingleCommit.Title} | {WarpedLine.Max()}");
-
-                    rowHeight = DefaultrowHeight * WarpedLine.Max();
-
-                    // Check if the table fits on the current page; else add a new page
-                    if (nextY + rowHeight + marginBottom > page.Height)
+                    if (_controller._JDT._UserToDisplay.Contains(SingleCommit.User))
                     {
-                        Debug.WriteLine(".................\nNew Page (Mid table) !!\n.................\n");
-                        // Debug.WriteLine($"currentY:{nextY}\rowHeight:{rowHeight}\nmarginBottom:{marginBottom}\n== {nextY + rowHeight + marginBottom}\npage.Height:{page.Height}\n-------------------------");
-                        // Add new page
-                        page = document.AddPage();
-                        page.Orientation = PdfSharpCore.PageOrientation.Landscape;
-                        gfx = XGraphics.FromPdfPage(page);
-                        DrawHeader(gfx, page, headerText);
-                        DrawFooter(gfx, page, writer, fileName);
-                        currentY = marginTop;
-                        nextY = marginTop;
+
+
+                        // double y = currentY + rowHeight * (counter + 1);
+                        List<int> WarpedLine = new List<int>();
+                        WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Title, font, col1Width));
+                        WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Content, font, col2Width));
+                        if (displayUser)
+                            WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.User, font, col3Width));
+                        WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Status, font, col4Width));
+                        WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Duration.ToString(@"hh\:mm"), font, col5Width));
+
+                        Debug.WriteLine($"---------------------{SingleCommit.Title} | {WarpedLine.Max()}");
+
+                        rowHeight = DefaultrowHeight * WarpedLine.Max();
+
+                        // Check if the table fits on the current page; else add a new page
+                        if (nextY + rowHeight + marginBottom > page.Height)
+                        {
+                            Debug.WriteLine(".................\nNew Page (Mid table) !!\n.................\n");
+                            // Debug.WriteLine($"currentY:{nextY}\rowHeight:{rowHeight}\nmarginBottom:{marginBottom}\n== {nextY + rowHeight + marginBottom}\npage.Height:{page.Height}\n-------------------------");
+                            // Add new page
+                            page = document.AddPage();
+                            page.Orientation = PdfSharpCore.PageOrientation.Landscape;
+                            gfx = XGraphics.FromPdfPage(page);
+                            DrawHeader(gfx, page, headerText);
+                            DrawFooter(gfx, page, writer, fileName);
+                            currentY = marginTop;
+                            nextY = marginTop;
+                        }
+
+                        // Debug.WriteLine($"WarpedLine.Max(): {WarpedLine.Max()}");
+
+                        gfx.DrawRectangle(XPens.Black, startX, nextY, col1Width, rowHeight);
+                        if (displayUser)
+                        {
+                            gfx.DrawRectangle(XPens.Black, startX + col1Width + col2Width, nextY, col3Width, rowHeight);
+                            gfx.DrawRectangle(XPens.Black, startX + col1Width, nextY, col2Width, rowHeight);
+                        }
+                        else
+                            gfx.DrawRectangle(XPens.Black, startX + col1Width, nextY, col2Width + col3Width, rowHeight);
+                        gfx.DrawRectangle(XPens.Black, startX + col1Width + col2Width + col3Width, nextY, col4Width, rowHeight);
+                        gfx.DrawRectangle(XPens.Black, startX + col1Width + col2Width + col3Width + col4Width, nextY, col5Width, rowHeight);
+
+
+                        DrawStringWrapped(gfx, SingleCommit.Title, font, XBrushes.Black, new XRect(startX, nextY, col1Width, rowHeight), margin);
+                        if (displayUser)
+                        {
+                            // gfx.DrawString(SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width + margin, y, col2Width, rowHeight), XStringFormats.CenterLeft);
+                            DrawStringWrapped(gfx, SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width + margin, nextY, col2Width, rowHeight), margin);
+                            gfx.DrawString(SingleCommit.User, font, XBrushes.Black, new XRect(startX + col1Width + col2Width, nextY, col3Width, rowHeight), XStringFormats.Center);
+                        }
+                        else
+                            DrawStringWrapped(gfx, SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width + margin, nextY, col2Width + col3Width, rowHeight), margin);
+                        // gfx.DrawString(SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width, y, col2Width+col3Width + margin, rowHeight), XStringFormats.CenterLeft);
+                        gfx.DrawString(SingleCommit.Status, font, XBrushes.Black, new XRect(startX + col1Width + col2Width + col3Width, nextY, col4Width, rowHeight), XStringFormats.Center);
+                        gfx.DrawString(SingleCommit.Duration.ToString(@"hh\:mm"), font, XBrushes.Black, new XRect(startX + col1Width + col2Width + col3Width + col4Width, nextY, col5Width, rowHeight), XStringFormats.Center);
+                        displayDay = true;
+                        counter++;
+                        if (justReturned)
+                        {
+                            justReturned = false;
+                            nextY += marginTop;
+                            tableHeight = 0;
+                            rowHeight = 0;
+                        }
+                        else
+                        {
+
+                            nextY += rowHeight;
+                            tableHeight += rowHeight;
+                            rowHeight = DefaultrowHeight;
+                        }
+                        WarpedLine.Clear();
                     }
-
-                    // Debug.WriteLine($"WarpedLine.Max(): {WarpedLine.Max()}");
-
-                    gfx.DrawRectangle(XPens.Black, startX, nextY, col1Width, rowHeight);
-                    if (displayUser)
-                    {
-                        gfx.DrawRectangle(XPens.Black, startX + col1Width + col2Width, nextY, col3Width, rowHeight);
-                        gfx.DrawRectangle(XPens.Black, startX + col1Width, nextY, col2Width, rowHeight);
-                    }
-                    else
-                        gfx.DrawRectangle(XPens.Black, startX + col1Width, nextY, col2Width+col3Width, rowHeight);
-                    gfx.DrawRectangle(XPens.Black, startX + col1Width + col2Width + col3Width, nextY, col4Width, rowHeight);
-                    gfx.DrawRectangle(XPens.Black, startX + col1Width + col2Width + col3Width + col4Width, nextY, col5Width, rowHeight);
-
-
-                    DrawStringWrapped(gfx, SingleCommit.Title, font, XBrushes.Black, new XRect(startX, nextY, col1Width, rowHeight), margin);
-                    if (displayUser)
-                    {
-                        // gfx.DrawString(SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width + margin, y, col2Width, rowHeight), XStringFormats.CenterLeft);
-                        DrawStringWrapped(gfx, SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width + margin, nextY, col2Width, rowHeight), margin);
-                        gfx.DrawString(SingleCommit.User, font, XBrushes.Black, new XRect(startX + col1Width + col2Width, nextY, col3Width, rowHeight), XStringFormats.Center);
-                    }else
-                        DrawStringWrapped(gfx, SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width + margin, nextY, col2Width + col3Width, rowHeight), margin);
-                    // gfx.DrawString(SingleCommit.Content, font, XBrushes.Black, new XRect(startX + col1Width, y, col2Width+col3Width + margin, rowHeight), XStringFormats.CenterLeft);
-                    gfx.DrawString(SingleCommit.Status, font, XBrushes.Black, new XRect(startX + col1Width + col2Width + col3Width, nextY, col4Width, rowHeight), XStringFormats.Center);
-                    gfx.DrawString(SingleCommit.Duration.ToString(@"hh\:mm"), font, XBrushes.Black, new XRect(startX + col1Width + col2Width + col3Width + col4Width, nextY, col5Width, rowHeight), XStringFormats.Center);
-
-                    counter++;
-                    if (justReturned)
-                    {
-                        justReturned = false;
-                        nextY += marginTop;
-                        tableHeight = 0;
-                        rowHeight = 0;
-                    }
-                    else
-                    {
-
-                        nextY += rowHeight;
-                        tableHeight += rowHeight;
-                        rowHeight = DefaultrowHeight;
-                    }
-                    WarpedLine.Clear();
                 }
                 // Debug.WriteLine($"tableHeight : {tableHeight}\rowHeight : {rowHeight}\n");
                 rowHeight = DefaultrowHeight;

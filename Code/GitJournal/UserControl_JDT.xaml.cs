@@ -33,7 +33,7 @@ namespace GitJournal
 
         Grid _GirdModified;
 
-        List<string> _UserToDisplay;
+        public List<string> _UserToDisplay { get; set; }
         public UserControl_JDT(Controller controller)
         {
             InitializeComponent();

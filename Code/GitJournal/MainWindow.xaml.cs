@@ -140,7 +140,7 @@ namespace GitJournal
 
         private void MenuItem_Click_Export_pdf(object sender, RoutedEventArgs e)
         {
-
+            _controller._PDFmanager.createPDF(_controller._ClientName, _controller._RepoSelected);
         }
 
         public void displayUserInfo(string userName, BitmapImage userIcon)
@@ -156,6 +156,7 @@ namespace GitJournal
                 case 1: // page to choose the repo
                     Button_Display.Visibility = Visibility.Visible;
                     StackPanel_JDT_Content.Visibility = Visibility.Hidden;
+                    Grid_Button.Visibility = Visibility.Hidden;
 
                     Grid_JDT_Titles.Visibility = Visibility.Hidden;
                     Grid_JDT_Total.Children[1].Visibility = Visibility.Hidden;
@@ -166,6 +167,7 @@ namespace GitJournal
                     break;
                 case 2: // page to display JDT
                     StackPanel_JDT_Content.Visibility = Visibility.Visible;
+                    Grid_Button.Visibility = Visibility.Visible;
                     Button_Display.Visibility = Visibility.Hidden;
 
                     Grid_JDT_Titles.Visibility = Visibility.Visible;
@@ -184,7 +186,7 @@ namespace GitJournal
 
         private void changeVisibility_Click(object sender, RoutedEventArgs e)
         {
-           _controller._PDFmanager.createPDF("Morgan-DD", _controller._RepoSelected, true);
+           _controller._PDFmanager.createPDF(_controller._ClientName, _controller._RepoSelected);
         }
 
         private void Button_Display_Click(object sender, RoutedEventArgs e)

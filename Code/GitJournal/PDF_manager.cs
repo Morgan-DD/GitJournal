@@ -55,8 +55,11 @@ namespace GitJournal
                 double verticalGap = 20;
 
                 // Check if the table fits on the current page; else add a new page
-                if (currentY + tableHeight + marginBottom > page.Height)
+                if (currentY + DefaultrowHeight * 5 + marginBottom > page.Height)
                 {
+                    Debug.WriteLine(".................\nNew Page (Start table) !!\n.................\n");
+                    // Debug.WriteLine($"currentY:{currentY}\rowHeight:{rowHeight}\nmarginBottom:{marginBottom}\n== {currentY + rowHeight + marginBottom}\npage.Height:{page.Height}\n-------------------------");
+
                     // Add new page
                     page = document.AddPage();
                     page.Orientation = PdfSharpCore.PageOrientation.Landscape;
@@ -96,10 +99,11 @@ namespace GitJournal
                 // Draw data rows
                 int counter = 0;
                 double nextY = currentY+ rowHeight;
+                bool justReturned = false;
+                // Debug.WriteLine($"\ncurrentY : {currentY}\rowHeight : {rowHeight}\nextY : {nextY}");
                 foreach (Commit_Info SingleCommit in commitGroupByDay)
                 {
-                   // double y = currentY + rowHeight * (counter + 1);
-
+                    // double y = currentY + rowHeight * (counter + 1);
                     List<int> WarpedLine = new List<int>();
                     WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Title, font, col1Width));
                     WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Content, font, col2Width));
@@ -108,9 +112,26 @@ namespace GitJournal
                     WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Status, font, col4Width));
                     WarpedLine.Add(CountWrappedLines(gfx, SingleCommit.Duration.ToString(@"hh\:mm"), font, col5Width));
 
+                    Debug.WriteLine($"---------------------{SingleCommit.Title} | {WarpedLine.Max()}");
+
                     rowHeight = DefaultrowHeight * WarpedLine.Max();
 
-                    Debug.WriteLine($"WarpedLine.Max(): {WarpedLine.Max()}");
+                    // Check if the table fits on the current page; else add a new page
+                    if (nextY + rowHeight + marginBottom > page.Height)
+                    {
+                        Debug.WriteLine(".................\nNew Page (Mid table) !!\n.................\n");
+                        // Debug.WriteLine($"currentY:{nextY}\rowHeight:{rowHeight}\nmarginBottom:{marginBottom}\n== {nextY + rowHeight + marginBottom}\npage.Height:{page.Height}\n-------------------------");
+                        // Add new page
+                        page = document.AddPage();
+                        page.Orientation = PdfSharpCore.PageOrientation.Landscape;
+                        gfx = XGraphics.FromPdfPage(page);
+                        DrawHeader(gfx, page, headerText);
+                        DrawFooter(gfx, page, writer, fileName);
+                        currentY = marginTop;
+                        nextY = marginTop;
+                    }
+
+                    // Debug.WriteLine($"WarpedLine.Max(): {WarpedLine.Max()}");
 
                     gfx.DrawRectangle(XPens.Black, startX, nextY, col1Width, rowHeight);
                     if (displayUser)
@@ -137,12 +158,25 @@ namespace GitJournal
                     gfx.DrawString(SingleCommit.Duration.ToString(@"hh\:mm"), font, XBrushes.Black, new XRect(startX + col1Width + col2Width + col3Width + col4Width, nextY, col5Width, rowHeight), XStringFormats.Center);
 
                     counter++;
-                    nextY += rowHeight;
-                    tableHeight += rowHeight;
-                    rowHeight = DefaultrowHeight;
+                    if (justReturned)
+                    {
+                        justReturned = false;
+                        nextY += marginTop;
+                        tableHeight = 0;
+                        rowHeight = 0;
+                    }
+                    else
+                    {
+
+                        nextY += rowHeight;
+                        tableHeight += rowHeight;
+                        rowHeight = DefaultrowHeight;
+                    }
+                    WarpedLine.Clear();
                 }
+                // Debug.WriteLine($"tableHeight : {tableHeight}\rowHeight : {rowHeight}\n");
                 rowHeight = DefaultrowHeight;
-                currentY += tableHeight + verticalGap;
+                currentY = nextY+ verticalGap;
             }
 
             // Save or use document here, e.g.
@@ -178,93 +212,115 @@ namespace GitJournal
 
         void DrawStringWrapped(XGraphics gfx, string text, XFont font, XBrush brush, XRect rect, double margin)
         {
-            var lines = new List<string>();
-            var words = text.Split(' ');
+            var allLines = new List<string>();
 
-            string currentLine = "";
-            foreach (var word in words)
+            // Split by existing line breaks first
+            var paragraphs = text.Replace("\r\n", "\n") // Normalize line breaks
+                     .Split('\n')
+                     .Where(p => !string.IsNullOrWhiteSpace(p)) // Ignore empty lines
+                     .ToList();
+
+            foreach (var paragraph in paragraphs)
             {
-                string testLine = currentLine.Length == 0 ? word : currentLine + " " + word;
-                var size = gfx.MeasureString(testLine, font);
-                if (size.Width > rect.Width - 2 * margin)
+                paragraph.Replace("\r\n", "");
+                paragraph.Replace("\n", "");
+                var words = paragraph.Split(' ');
+                string currentLine = "";
+
+                foreach (var word in words)
                 {
-                    if (currentLine.Length > 0)
+                    string testLine = currentLine.Length == 0 ? word : currentLine + " " + word;
+                    var size = gfx.MeasureString(testLine, font);
+                    if (size.Width > rect.Width - 2 * margin)
                     {
-                        lines.Add(currentLine);
-                        currentLine = word;
+                        if (currentLine.Length > 0)
+                        {
+                            allLines.Add(currentLine);
+                            currentLine = word;
+                        }
+                        else
+                        {
+                            // Single very long word: force break
+                            allLines.Add(word);
+                            currentLine = "";
+                        }
                     }
                     else
                     {
-                        // Single very long word: force break
-                        lines.Add(word);
-                        currentLine = "";
+                        currentLine = testLine;
                     }
                 }
-                else
-                {
-                    currentLine = testLine;
-                }
+                if (!string.IsNullOrEmpty(currentLine))
+                    allLines.Add(currentLine);
             }
-            if (!string.IsNullOrEmpty(currentLine))
-                lines.Add(currentLine);
 
             double lineHeight = font.GetHeight();
             double y = rect.Y + margin;
-            foreach (var line in lines)
+            foreach (var line in allLines)
             {
-                gfx.DrawString(line, font, brush, new XRect(rect.X + margin, y, rect.Width, lineHeight), XStringFormats.TopLeft);
+                gfx.DrawString(line, font, brush, new XRect(rect.X + margin, y, rect.Width, lineHeight), XStringFormats.CenterLeft);
                 y += lineHeight;
             }
         }
 
+
         int CountWrappedLines(XGraphics gfx, string text, XFont font, double maxWidth)
         {
-            var words = text.Split(' ');
-            int lineCount = 1;
-            string currentLine = "";
+            var paragraphs = text.Replace("\r\n", "\n") // Normalize line breaks
+                                 .Split('\n')
+                                 .Where(p => !string.IsNullOrWhiteSpace(p)) // Ignore empty lines
+                                 .ToList();
 
-            foreach (var word in words)
+            int totalLines = 0;
+
+            foreach (var paragraph in paragraphs)
             {
-                string testLine = currentLine.Length == 0 ? word : currentLine + " " + word;
-                var size = gfx.MeasureString(testLine, font);
+                var words = paragraph.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string currentLine = "";
+                int lineCount = 1;
 
-                if (size.Width > maxWidth)
+                foreach (var word in words)
                 {
-                    // Current line is full, start new line with this word
-                    lineCount++;
-                    currentLine = word;
+                    string testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
+                    var size = gfx.MeasureString(testLine+"a", font);
 
-                    // Handle extremely long single words that can't fit in one line
-                    var wordSize = gfx.MeasureString(word, font);
-                    if (wordSize.Width > maxWidth)
+                    if (size.Width > maxWidth)
                     {
-                        // Count how many lines this single word will need if broken at character level
-                        int charsPerLine = 1;
-                        // Find max chars that fit
-                        for (int i = 1; i <= word.Length; i++)
+                        totalLines++; // Commit current line
+                        currentLine = word;
+
+                        // Break up long word if needed
+                        var wordSize = gfx.MeasureString(word, font);
+                        if (wordSize.Width > maxWidth)
                         {
-                            var substr = word.Substring(0, i);
-                            if (gfx.MeasureString(substr, font).Width > maxWidth)
+                            int charsPerLine = 1;
+                            for (int i = 1; i <= word.Length; i++)
                             {
-                                charsPerLine = i - 1;
-                                break;
+                                if (gfx.MeasureString(word.Substring(0, i), font).Width > maxWidth)
+                                {
+                                    charsPerLine = i - 1;
+                                    break;
+                                }
                             }
+
+                            if (charsPerLine == 0) charsPerLine = 1;
+                            int additional = (int)Math.Ceiling((double)word.Length / charsPerLine);
+                            totalLines += additional - 1;
+                            currentLine = "";
                         }
-                        if (charsPerLine == 0) charsPerLine = 1;
-                        int additionalLines = (int)Math.Ceiling((double)word.Length / charsPerLine) - 1;
-                        lineCount += additionalLines;
-                        currentLine = "";
+                    }
+                    else
+                    {
+                        currentLine = testLine;
                     }
                 }
-                else
-                {
-                    currentLine = testLine;
-                }
+
+                if (!string.IsNullOrEmpty(currentLine))
+                    totalLines++;
             }
 
-            return lineCount;
+            return totalLines;
         }
-
 
 
     }

@@ -16,7 +16,15 @@ namespace GitJournal
 
         public void createPDF(string writer, string repoName,string filePath)
         {
-            string fileName = $"{repoName.Split("/")[1]}_JDT.pdf";
+            bool isUserNotConnected = false;
+            string fileName = "";
+            if (repoName == null)
+            {
+                fileName = "GitJournal_JDT.pdf";
+                isUserNotConnected = true;
+            }
+            else
+                fileName = $"{repoName.Split("/")[1]}_JDT.pdf";
             string headerText = "Journal de travail";
 
             double marginTop = 50;
@@ -105,7 +113,7 @@ namespace GitJournal
                 // Debug.WriteLine($"\ncurrentY : {currentY}\rowHeight : {rowHeight}\nextY : {nextY}");
                 foreach (Commit_Info SingleCommit in commitGroupByDay)
                 {
-                    if (_controller._JDT._UserToDisplay.Contains(SingleCommit.User))
+                    if (_controller._JDT._UserToDisplay.Contains(SingleCommit.User) || isUserNotConnected)
                     {
 
 
@@ -174,7 +182,6 @@ namespace GitJournal
                         }
                         else
                         {
-
                             nextY += rowHeight;
                             tableHeight += rowHeight;
                             rowHeight = DefaultrowHeight;
@@ -201,6 +208,7 @@ namespace GitJournal
 
         private void DrawFooter(XGraphics gfx, PdfPage page, string writerName, string fileName)
         {
+            writerName ??= "";
             XFont footerFont = new XFont("Arial", 10, XFontStyle.Regular);
             double margin = 40;
             double yPos = page.Height - 40;

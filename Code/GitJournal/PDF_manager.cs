@@ -205,7 +205,7 @@ namespace GitJournal
             double margin = 40;
             double yPos = page.Height - 40;
 
-            // Left: Date
+            // Left: Date 
             string dateText = DateTime.Now.ToString("dd-MM-yyyy");
             gfx.DrawString(dateText, footerFont, XBrushes.Gray, new XPoint(margin, yPos));
 

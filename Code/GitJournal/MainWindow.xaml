@@ -114,7 +114,6 @@
                 </Grid>
             </Grid>
             <Grid/>
-            <Button x:Name="changeVisibility" Content="Button" HorizontalAlignment="Left" Margin="538,28,0,0" VerticalAlignment="Top" Click="changeVisibility_Click" />
         </Grid>
     </DockPanel>
 </Window>

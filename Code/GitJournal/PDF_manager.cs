@@ -110,6 +110,7 @@ namespace GitJournal
                 int counter = 0;
                 double nextY = currentY+ rowHeight;
                 bool justReturned = false;
+                TimeSpan dayTotal = new TimeSpan(0);
                 // Debug.WriteLine($"\ncurrentY : {currentY}\rowHeight : {rowHeight}\nextY : {nextY}");
                 foreach (Commit_Info SingleCommit in commitGroupByDay)
                 {
@@ -133,7 +134,7 @@ namespace GitJournal
                         // Check if the table fits on the current page; else add a new page
                         if (nextY + rowHeight + marginBottom > page.Height)
                         {
-                            Debug.WriteLine(".................\nNew Page (Mid table) !!\n.................\n");
+                            // Debug.WriteLine(".................\nNew Page (Mid table) !!\n.................\n");
                             // Debug.WriteLine($"currentY:{nextY}\rowHeight:{rowHeight}\nmarginBottom:{marginBottom}\n== {nextY + rowHeight + marginBottom}\npage.Height:{page.Height}\n-------------------------");
                             // Add new page
                             page = document.AddPage();
@@ -186,9 +187,17 @@ namespace GitJournal
                             tableHeight += rowHeight;
                             rowHeight = DefaultrowHeight;
                         }
+                        dayTotal += SingleCommit.Duration;
                         WarpedLine.Clear();
+
+
                     }
+
                 }
+                gfx.DrawString(dayTotal.ToString(@"hh\:mm"), font, XBrushes.Black, new XRect(startX + col1Width + col2Width + col3Width + col4Width, nextY, col5Width , DefaultrowHeight), XStringFormats.Center);
+                nextY += DefaultrowHeight;
+                tableHeight += rowHeight;
+                rowHeight = DefaultrowHeight;
                 // Debug.WriteLine($"tableHeight : {tableHeight}\rowHeight : {rowHeight}\n");
                 rowHeight = DefaultrowHeight;
                 currentY = nextY+ verticalGap;

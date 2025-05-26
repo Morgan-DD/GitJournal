@@ -272,5 +272,11 @@ namespace GitJournal
         {
             _controller.addNewEntry();
         }
+
+        private void MenuItem_Click_HelpPAT(object sender, RoutedEventArgs e)
+        {
+            var help = new Window_Help();
+            help.ShowDialog();
+        }
     }
 }

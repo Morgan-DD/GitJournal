@@ -66,6 +66,9 @@
                             <MenuItem Header="PDF" Click="MenuItem_Click_Export_pdf"/>
                         </MenuItem>
                     </MenuItem>
+                    <MenuItem Header="Aide">
+                        <MenuItem Header="PAT" Click="MenuItem_Click_HelpPAT"/>
+                    </MenuItem>
                 </Menu>
                 <DockPanel DockPanel.Dock="Right" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

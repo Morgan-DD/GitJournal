@@ -1,0 +1,64 @@
+Sommaire:
+  simple somaire
+
+Contexte:
+  
+
+[delete]Situer le produit:
+
+produit:
+  Générer un JDT en utilisant les commits
+  GitHub
+  
+  Format des commits
+  
+
+fonctionement:
+
+  PAT:
+	- comment l'obtenir (court)
+	- Vérification + image/name
+	- ce qu'on peut faire avec (+)
+
+  Affichage et modification:
+	- display JDT
+	- modifier, ajouter, supprimer -> fichier GITJ
+
+  PDF:
+	- Génération
+
+
+organisation:
+
+  projet:
+	- cp
+	- sprints 2 semaines
+	- stories
+	- 
+
+  outils utilisés:
+	- github
+	- vs 2024
+	- figma (maquettes)
+	- drawio (schéma)
+
+moment clé:
+	
+  Génération de PDF:
+	- itext7 -> PdfSharp 
+
+bilan:
+
+  Produit:
+	- problèmes
+	- erreures restantes
+	- amélioration
+  
+  Personel:
+	- commentaires
+	- intéréssant
+	- 
+
+questions:
+	icone
+

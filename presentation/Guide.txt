@@ -39,6 +39,7 @@ organisation:
   outils utilisés:
 	- github
 	- vs 2024
+	- suite office
 	- figma (maquettes)
 	- drawio (schéma)
 

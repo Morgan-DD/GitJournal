@@ -51,7 +51,8 @@ moment clé:
 bilan:
 
   Produit:
-	- problèmes
+	- problèmes:
+		
 	- erreures restantes
 	- amélioration
   
